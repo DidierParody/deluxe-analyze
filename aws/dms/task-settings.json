@@ -1,0 +1,24 @@
+{
+  "TargetMetadata": {
+    "ParallelApplyThreads": 0,
+    "ParallelApplyBufferSize": 100,
+    "PartitionIncludeSchemaDirectory": true
+  },
+  "FullLoadSettings": {
+    "TargetTablePrepMode": "DO_NOTHING",
+    "CreatePkAfterFullLoad": false
+  },
+  "Logging": {
+    "EnableLogging": true,
+    "LogComponents": [
+      { "Id": "SOURCE_UNLOAD", "Severity": "LOGGER_SEVERITY_DEFAULT" },
+      { "Id": "TARGET_LOAD", "Severity": "LOGGER_SEVERITY_DEFAULT" },
+      { "Id": "TASK_MANAGER", "Severity": "LOGGER_SEVERITY_DEFAULT" }
+    ]
+  },
+  "ControlTablesSettings": {
+    "historyTimeslotInMinutes": 5,
+    "StatusTableEnabled": true,
+    "suspendedTablesTableEnabled": true
+  }
+}
