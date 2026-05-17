@@ -1,0 +1,32 @@
+name: CI
+
+on:
+  pull_request:
+    paths:
+      - 'etl/**'
+      - 'dispatcher/**'
+
+jobs:
+  lint-and-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ruff
+        run: pip install ruff
+
+      - name: Lint ETL
+        run: ruff check etl/
+
+      - name: Lint Dispatcher
+        run: ruff check dispatcher/
+
+      - name: Install ETL dev deps
+        run: pip install -e "etl/[dev]"
+
+      - name: Test ETL
+        run: pytest etl/tests/ -v --tb=short

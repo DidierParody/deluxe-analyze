@@ -1,0 +1,31 @@
+name: Deploy ETL
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'etl/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Upload ETL job to GCS
+        run: |
+          gsutil cp etl/jobs/main.py gs://${{ secrets.ETL_ARTIFACTS_BUCKET }}/jobs/main.py
+          cd etl && zip -r /tmp/etl-deps.zip etl/ && cd ..
+          gsutil cp /tmp/etl-deps.zip gs://${{ secrets.ETL_ARTIFACTS_BUCKET }}/deps/etl-deps.zip
