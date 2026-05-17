@@ -7,6 +7,7 @@ from etl.load.neo4j_writer import Neo4jWriter
 from etl.normalize.canonical import CONOCE_A_CYPHER
 from etl.normalize.from_csv import normalize_csv
 from etl.normalize.from_v2 import normalize_v2
+from etl.normalize.merge_canonical import merge_canonical
 from etl.sources.csv_source import load_csvs
 from etl.sources.s3_cdc_source import load_cdc_parquet
 from etl.state.watermark import Watermark
@@ -36,26 +37,38 @@ def main() -> None:
         raw = load_csvs(spark, config.GCS_SEED_BUCKET)
         canonical = normalize_csv(raw)
     else:
-        uris = args.s3_uris.split(",")
+        uris = [u for u in args.s3_uris.split(",") if u]
         raw = load_cdc_parquet(spark, uris, config.AWS_ACCESS_KEY_ID, config.AWS_SECRET_ACCESS_KEY)
         canonical = normalize_v2(raw)
 
+    # ── Write nodes (always present) ─────────────────────────────────────────
     writer.write_nodes(canonical["usuarios"], "Usuario")
     writer.write_nodes(canonical["eventos"], "Evento")
-    writer.write_nodes(canonical["mesas"], "Mesa")
-    writer.write_nodes(canonical["segmentos"], "Segmento")
-    writer.write_relationship(
-        canonical["asistio_a"], "ASISTIO_A", "Usuario", "Evento", "user_id", "event_id"
-    )
-    writer.write_relationship(
-        canonical["reservo"], "RESERVO", "Usuario", "Mesa", "user_id", "table_id"
-    )
-    writer.write_relationship(
-        canonical["pertenece_a"], "PERTENECE_A", "Usuario", "Segmento", "user_id", "segment_name"
-    )
 
+    # ── Write optional nodes ──────────────────────────────────────────────────
+    if "mesas" in canonical:
+        writer.write_nodes(canonical["mesas"], "Mesa")
+    if "segmentos" in canonical:
+        writer.write_nodes(canonical["segmentos"], "Segmento")
+
+    # ── Write optional relationships ──────────────────────────────────────────
+    if "asistio_a" in canonical:
+        writer.write_relationship(
+            canonical["asistio_a"], "ASISTIO_A", "Usuario", "Evento", "user_id", "event_id"
+        )
+    if "reservo" in canonical:
+        writer.write_relationship(
+            canonical["reservo"], "RESERVO", "Usuario", "Mesa", "user_id", "table_id"
+        )
+    if "pertenece_a" in canonical:
+        writer.write_relationship(
+            canonical["pertenece_a"], "PERTENECE_A", "Usuario", "Segmento", "user_id", "segment_name"
+        )
+
+    # ── Derive CONOCE_A in Neo4j (co-attendance inference) ───────────────────
     writer.run_cypher(CONOCE_A_CYPHER)
 
+    # ── Watermark (CDC mode only) ─────────────────────────────────────────────
     if args.mode == "cdc":
         wm = Watermark(config.GCS_WATERMARK_BUCKET)
         wm.mark_processed(uris)
