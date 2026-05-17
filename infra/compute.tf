@@ -55,6 +55,7 @@ resource "google_compute_resource_policy" "neo4j_snapshot" {
 
 resource "google_compute_disk_resource_policy_attachment" "neo4j_snapshot" {
   name = google_compute_resource_policy.neo4j_snapshot.name
-  disk = google_compute_instance.neo4j.boot_disk[0].source
+  # boot_disk[0].source returns the full self_link; disk field needs just the name
+  disk = google_compute_instance.neo4j.name
   zone = var.zone
 }
