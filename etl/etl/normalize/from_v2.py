@@ -89,13 +89,32 @@ def normalize_v2(raw: dict[str, DataFrame], prefix: str = "v2") -> dict[str, Dat
 
     if "core.dico_tables" in raw:
         df = raw["core.dico_tables"]
-        table_num_col = "table_number" if "table_number" in df.columns else "numero_mesa" if "numero_mesa" in df.columns else None
+        table_num_col = (
+            "table_number" if "table_number" in df.columns
+            else "numero_mesa" if "numero_mesa" in df.columns
+            else None
+        )
         mesas = (
             df.withColumn("id", add_namespace("table_id", prefix))
-            .withColumn("event_id", add_namespace("event_id", prefix) if "event_id" in df.columns else F.lit(None).cast("string"))
-            .withColumn("table_number", (F.col(table_num_col) if table_num_col else F.lit(None)).cast(IntegerType()))
-            .withColumn("capacity", F.col("capacity").cast(IntegerType()) if "capacity" in df.columns else F.lit(None).cast(IntegerType()))
-            .withColumn("is_vip", F.col("is_vip").cast("boolean") if "is_vip" in df.columns else F.lit(None).cast("boolean"))
+            .withColumn(
+                "event_id",
+                add_namespace("event_id", prefix) if "event_id" in df.columns
+                else F.lit(None).cast("string"),
+            )
+            .withColumn(
+                "table_number",
+                (F.col(table_num_col) if table_num_col else F.lit(None)).cast(IntegerType()),
+            )
+            .withColumn(
+                "capacity",
+                F.col("capacity").cast(IntegerType()) if "capacity" in df.columns
+                else F.lit(None).cast(IntegerType()),
+            )
+            .withColumn(
+                "is_vip",
+                F.col("is_vip").cast("boolean") if "is_vip" in df.columns
+                else F.lit(None).cast("boolean"),
+            )
             .withColumn("source", F.lit(prefix))
             .select("id", "table_number", "capacity", "is_vip", "event_id", "source")
         )
@@ -106,7 +125,12 @@ def normalize_v2(raw: dict[str, DataFrame], prefix: str = "v2") -> dict[str, Dat
         asistio_a = (
             df.withColumn("user_id", add_namespace("user_id", prefix))
             .withColumn("event_id", add_namespace("event_id", prefix))
-            .withColumn("ticket_tier", F.col("ticket_tier") if "ticket_tier" in df.columns else F.col("tier") if "tier" in df.columns else F.lit(None).cast("string"))
+            .withColumn(
+                "ticket_tier",
+                F.col("ticket_tier") if "ticket_tier" in df.columns
+                else F.col("tier") if "tier" in df.columns
+                else F.lit(None).cast("string"),
+            )
             .withColumn("source", F.lit(prefix))
             .select("user_id", "event_id", "ticket_tier", "source")
         )
@@ -117,7 +141,11 @@ def normalize_v2(raw: dict[str, DataFrame], prefix: str = "v2") -> dict[str, Dat
         reservo = (
             df.withColumn("user_id", add_namespace("user_id", prefix))
             .withColumn("table_id", add_namespace("table_id", prefix))
-            .withColumn("event_id", add_namespace("event_id", prefix) if "event_id" in df.columns else F.lit(None).cast("string"))
+            .withColumn(
+                "event_id",
+                add_namespace("event_id", prefix) if "event_id" in df.columns
+                else F.lit(None).cast("string"),
+            )
             .withColumn("source", F.lit(prefix))
             .select("user_id", "table_id", "event_id", "source")
         )

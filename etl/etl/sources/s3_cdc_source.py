@@ -22,7 +22,10 @@ def load_cdc_parquet(
     spark.conf.set("fs.s3a.access.key", aws_access_key)
     spark.conf.set("fs.s3a.secret.key", aws_secret_key)
     spark.conf.set("fs.s3a.impl", "org.apache.hadoop.fs.s3a.S3AFileSystem")
-    spark.conf.set("fs.s3a.aws.credentials.provider", "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider")
+    spark.conf.set(
+        "fs.s3a.aws.credentials.provider",
+        "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
+    )
 
     grouped: dict[str, list[str]] = {}
     for uri in s3_uris:
