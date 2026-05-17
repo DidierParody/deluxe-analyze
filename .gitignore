@@ -6,3 +6,17 @@ __pycache__/
 dist/
 .pytest_cache/
 .ruff_cache/
+
+# Terraform
+infra/.terraform/
+infra/*.tfstate
+infra/*.tfstate.backup
+infra/terraform.tfvars
+infra/.terraform.lock.hcl
+
+# Diagram exports
+*.png
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+**/.ipynb_checkpoints/
