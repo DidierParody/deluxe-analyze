@@ -33,27 +33,30 @@ def test_add_namespace_preserves_nulls(spark: SparkSession):
 
 @pytest.fixture
 def raw_csv(spark: SparkSession) -> dict:
+    # Column names match actual CSV schema (pk = "id", not "user_id"/"event_id")
     users = spark.createDataFrame(
         [("1", "tg1", "alice", "influencer", "g1", "g2", "high",
           "0.9", "0.8", "vip", "A", "0.1", "0.5")],
-        ["user_id", "telegram_id", "username", "social_role",
+        ["id", "telegram_id", "username", "social_role",
          "social_group_id", "secondary_group_id", "attendance_level",
          "vip_affinity", "invite_power", "table_preference",
          "rfm_seed_segment", "newcomer_affinity", "mixing_score"],
     )
+    # events.csv has start_hour_bucket (int) instead of start_time/end_time
     events = spark.createDataFrame(
-        [("10", "Noche VIP", "vip", "high", "0.95",
-          "2026-01-15", "2026-01-15T22:00:00", "2026-01-16T04:00:00", "1")],
-        ["event_id", "name", "event_type", "expected_demand_level", "vip_pull",
-         "event_date", "start_time", "end_time", "event_state_id"],
+        [("10", "Noche VIP", "vip", "high", "0.95", "2026-01-15", "22", "2")],
+        ["id", "name", "event_type", "expected_demand_level", "vip_pull",
+         "event_date", "start_hour_bucket", "event_state"],
     )
+    # tickets = actual purchases (transactional, arrives via CDC)
     tickets = spark.createDataFrame(
         [("1", "10", "vip")],
         ["user_id", "event_id", "ticket_tier"],
     )
-    tables = spark.createDataFrame(
-        [("5", "3", "4", "true", "10")],
-        ["table_id", "table_number", "capacity", "is_vip", "event_id"],
+    # dico_tables.csv: pk="id", table number="number", is_vip via vip_suitability
+    dico_tables = spark.createDataFrame(
+        [("5", "3", "4", "0.9")],
+        ["id", "number", "capacity", "vip_suitability"],
     )
     reservations = spark.createDataFrame(
         [("1", "5", "10")],
@@ -61,7 +64,7 @@ def raw_csv(spark: SparkSession) -> dict:
     )
     segments = spark.createDataFrame(
         [("VIP", "High-value customers")],
-        ["name", "description"],
+        ["segment_name", "description"],
     )
     user_segments = spark.createDataFrame(
         [("1", "VIP")],
@@ -71,7 +74,7 @@ def raw_csv(spark: SparkSession) -> dict:
         "users": users,
         "events": events,
         "tickets": tickets,
-        "tables": tables,
+        "dico_tables": dico_tables,
         "reservations": reservations,
         "segments": segments,
         "user_segments": user_segments,
