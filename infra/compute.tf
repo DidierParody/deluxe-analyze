@@ -30,7 +30,7 @@ resource "google_compute_instance" "neo4j" {
   }
 
   metadata = {
-    startup-script        = file("${path.module}/startup.sh")
+    startup-script        = file("${path.module}/compute/startup.sh")
     neo4j-password-secret = google_secret_manager_secret.neo4j_password.secret_id
   }
 }

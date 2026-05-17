@@ -11,15 +11,3 @@ locals {
     }
   }
 }
-
-output "dataproc_subnet" {
-  value = google_compute_subnetwork.data.self_link
-}
-
-output "dataproc_sa_email" {
-  value = google_service_account.dataproc_etl.email
-}
-
-output "etl_artifacts_bucket" {
-  value = google_storage_bucket.etl_artifacts.name
-}
