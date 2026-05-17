@@ -25,6 +25,12 @@ jobs:
       - name: Lint Dispatcher
         run: ruff check dispatcher/
 
+      - name: Set up Java 17 for PySpark
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
       - name: Install ETL dev deps
         run: pip install -e "etl/[dev]"
 
