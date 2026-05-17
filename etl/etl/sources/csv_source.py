@@ -1,6 +1,5 @@
 from pyspark.sql import DataFrame, SparkSession
 
-
 _CSV_TABLES = [
     "users",
     "events",

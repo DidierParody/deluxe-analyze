@@ -1,6 +1,5 @@
 from pyspark.sql import DataFrame
 
-
 _PK_BY_ENTITY = {
     "segmentos": "name",
 }
