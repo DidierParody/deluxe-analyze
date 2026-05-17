@@ -2,11 +2,10 @@ import pytest
 from pyspark.sql import SparkSession
 from pyspark.sql.types import StringType, StructField, StructType
 
-from etl.normalize.canonical import add_namespace, SCHEMA_QUERIES, CONOCE_A_CYPHER
+from etl.normalize.canonical import CONOCE_A_CYPHER, SCHEMA_QUERIES, add_namespace
 from etl.normalize.from_csv import normalize_csv
 from etl.normalize.from_v2 import normalize_v2
 from etl.normalize.merge_canonical import merge_canonical
-
 
 # ── add_namespace ────────────────────────────────────────────────────────────
 
