@@ -58,6 +58,18 @@ jobs:
         with:
           terraform_version: ${{ env.TF_VERSION }}
 
+      - name: Generate terraform.tfvars
+        run: |
+          cat > terraform.tfvars <<EOF
+          project_id         = "${{ secrets.GCP_PROJECT }}"
+          region             = "us-central1"
+          zone               = "us-central1-a"
+          github_repo        = "DidierParody/deluxe-analyze"
+          neo4j_machine_type = "e2-medium"
+          neo4j_disk_size_gb = 50
+          allowed_neo4j_ips  = []
+          EOF
+
       - name: Terraform Init
         run: terraform init
 
