@@ -1,0 +1,25 @@
+id,event_type,expected_demand_level,target_group_1,target_group_2,vip_pull,name,description,event_date,start_hour_bucket,event_state
+1,especial,low,G04,G08,0.57,Evento Especial 1,Evento sintetico orientado a analisis social. Comunidades objetivo: G04 y G08,2025-01-03,22,2
+2,especial,medium,G10,G04,0.77,Evento Especial 2,Evento sintetico orientado a analisis social. Comunidades objetivo: G10 y G04,2025-01-04,22,2
+3,regular,low,G02,G06,0.39,Noche Deluxe 3,Evento sintetico orientado a analisis social. Comunidades objetivo: G02 y G06,2025-01-10,23,2
+4,especial,high,G07,G01,0.74,Evento Especial 4,Evento sintetico orientado a analisis social. Comunidades objetivo: G07 y G01,2025-02-01,23,2
+5,lanzamiento,medium,G08,G06,0.81,Lanzamiento Deluxe 5,Evento sintetico orientado a analisis social. Comunidades objetivo: G08 y G06,2025-02-07,23,2
+6,regular,high,G07,G09,0.41,Noche Deluxe 6,Evento sintetico orientado a analisis social. Comunidades objetivo: G07 y G09,2025-02-13,22,2
+7,regular,medium,G10,G09,0.54,Noche Deluxe 7,Evento sintetico orientado a analisis social. Comunidades objetivo: G10 y G09,2025-02-19,21,2
+8,lanzamiento,low,G03,G05,0.94,Lanzamiento Deluxe 8,Evento sintetico orientado a analisis social. Comunidades objetivo: G03 y G05,2025-03-01,23,2
+9,regular,high,G05,G04,0.49,Noche Deluxe 9,Evento sintetico orientado a analisis social. Comunidades objetivo: G05 y G04,2025-03-07,22,2
+10,especial,medium,G07,G09,0.64,Evento Especial 10,Evento sintetico orientado a analisis social. Comunidades objetivo: G07 y G09,2025-03-15,22,2
+11,regular,medium,G10,G04,0.23,Noche Deluxe 11,Evento sintetico orientado a analisis social. Comunidades objetivo: G10 y G04,2025-03-20,21,2
+12,lanzamiento,medium,G07,G04,0.75,Lanzamiento Deluxe 12,Evento sintetico orientado a analisis social. Comunidades objetivo: G07 y G04,2025-04-05,22,2
+13,especial,low,G05,G10,0.57,Evento Especial 13,Evento sintetico orientado a analisis social. Comunidades objetivo: G05 y G10,2025-04-11,23,2
+14,especial,medium,G08,G01,0.77,Evento Especial 14,Evento sintetico orientado a analisis social. Comunidades objetivo: G08 y G01,2025-04-17,22,2
+15,regular,medium,G05,G04,0.29,Noche Deluxe 15,Evento sintetico orientado a analisis social. Comunidades objetivo: G05 y G04,2025-04-23,23,2
+16,regular,medium,G04,G02,0.5,Noche Deluxe 16,Evento sintetico orientado a analisis social. Comunidades objetivo: G04 y G02,2025-05-02,23,2
+17,especial,low,G07,G03,0.74,Evento Especial 17,Evento sintetico orientado a analisis social. Comunidades objetivo: G07 y G03,2025-05-10,22,2
+18,regular,medium,G02,G06,0.29,Noche Deluxe 18,Evento sintetico orientado a analisis social. Comunidades objetivo: G02 y G06,2025-05-15,22,2
+19,regular,high,G02,G09,0.22,Noche Deluxe 19,Evento sintetico orientado a analisis social. Comunidades objetivo: G02 y G09,2025-06-06,22,2
+20,lanzamiento,low,G08,G04,0.88,Lanzamiento Deluxe 20,Evento sintetico orientado a analisis social. Comunidades objetivo: G08 y G04,2025-06-14,23,2
+21,regular,low,G08,G04,0.26,Noche Deluxe 21,Evento sintetico orientado a analisis social. Comunidades objetivo: G08 y G04,2025-06-18,23,2
+22,regular,low,G05,G07,0.47,Noche Deluxe 22,Evento sintetico orientado a analisis social. Comunidades objetivo: G05 y G07,2025-07-04,22,2
+23,regular,high,G07,G09,0.55,Noche Deluxe 23,Evento sintetico orientado a analisis social. Comunidades objetivo: G07 y G09,2025-07-12,22,2
+24,especial,medium,G04,G07,0.76,Evento Especial 24,Evento sintetico orientado a analisis social. Comunidades objetivo: G04 y G07,2025-08-01,22,2

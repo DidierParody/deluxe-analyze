@@ -1,0 +1,8 @@
+project_id = "your-gcp-project-id"
+region     = "us-central1"
+zone       = "us-central1-a"
+allowed_neo4j_ips = [
+  "YOUR_LAPTOP_IP/32",
+  # Add Colab IP ranges if needed, or use IAP tunnel instead
+]
+github_repo = "DidierParody/deluxe-analyze"

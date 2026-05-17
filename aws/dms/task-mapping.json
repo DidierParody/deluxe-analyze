@@ -1,0 +1,60 @@
+{
+  "rules": [
+    {
+      "rule-type": "selection",
+      "rule-id": "1",
+      "rule-name": "select-core-users",
+      "object-locator": { "schema-name": "core", "table-name": "users" },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "2",
+      "rule-name": "select-core-events",
+      "object-locator": { "schema-name": "core", "table-name": "events" },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "3",
+      "rule-name": "select-core-dico-tables",
+      "object-locator": { "schema-name": "core", "table-name": "dico_tables" },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "4",
+      "rule-name": "select-transactions-reservations",
+      "object-locator": { "schema-name": "transactions", "table-name": "reservations" },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "5",
+      "rule-name": "select-transactions-orders",
+      "object-locator": { "schema-name": "transactions", "table-name": "orders" },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "6",
+      "rule-name": "select-transactions-order-details",
+      "object-locator": { "schema-name": "transactions", "table-name": "order_details" },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "7",
+      "rule-name": "select-transactions-tickets",
+      "object-locator": { "schema-name": "transactions", "table-name": "tickets" },
+      "rule-action": "include"
+    },
+    {
+      "rule-type": "selection",
+      "rule-id": "8",
+      "rule-name": "select-transactions-payments",
+      "object-locator": { "schema-name": "transactions", "table-name": "payments" },
+      "rule-action": "include"
+    }
+  ]
+}

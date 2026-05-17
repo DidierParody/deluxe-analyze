@@ -1,0 +1,45 @@
+name: Deploy Dispatcher
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'dispatcher/**'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      REGION: us-central1
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and push dispatcher image
+        run: |
+          IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/deluxe-dispatcher/dispatcher:${{ github.sha }}"
+          docker build -t "$IMAGE" dispatcher/
+          docker push "$IMAGE"
+          docker tag "$IMAGE" "${IMAGE%:*}:latest"
+          docker push "${IMAGE%:*}:latest"
+
+      - name: Update Cloud Run Job
+        run: |
+          gcloud run jobs update dispatcher \
+            --image="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/deluxe-dispatcher/dispatcher:${{ github.sha }}" \
+            --region="${{ env.REGION }}"
