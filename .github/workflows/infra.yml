@@ -19,7 +19,26 @@ env:
   TF_VERSION: '1.7.5'
 
 jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      wif_configured: ${{ steps.check.outputs.wif_configured }}
+    steps:
+      - name: Check WIF secrets
+        id: check
+        env:
+          WIF_PROVIDER: ${{ secrets.WIF_PROVIDER }}
+        run: |
+          if [[ -n "$WIF_PROVIDER" ]]; then
+            echo "wif_configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "wif_configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice::WIF_PROVIDER secret not set. Configure GitHub Secrets after first terraform apply. Skipping Terraform steps."
+          fi
+
   terraform:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.wif_configured == 'true'
     runs-on: ubuntu-latest
     defaults:
       run:
