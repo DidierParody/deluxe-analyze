@@ -1,14 +1,17 @@
 name: Terraform Infra
 
 on:
+  workflow_dispatch: {}
   pull_request:
     paths:
       - 'infra/**'
+      - '.github/workflows/infra.yml'
   push:
     branches:
       - main
     paths:
       - 'infra/**'
+      - '.github/workflows/infra.yml'
 
 permissions:
   id-token: write
