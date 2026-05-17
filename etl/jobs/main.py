@@ -7,7 +7,6 @@ from etl.load.neo4j_writer import Neo4jWriter
 from etl.normalize.canonical import CONOCE_A_CYPHER
 from etl.normalize.from_csv import normalize_csv
 from etl.normalize.from_v2 import normalize_v2
-from etl.normalize.merge_canonical import merge_canonical
 from etl.sources.csv_source import load_csvs
 from etl.sources.s3_cdc_source import load_cdc_parquet
 from etl.state.watermark import Watermark
@@ -62,7 +61,8 @@ def main() -> None:
         )
     if "pertenece_a" in canonical:
         writer.write_relationship(
-            canonical["pertenece_a"], "PERTENECE_A", "Usuario", "Segmento", "user_id", "segment_name"
+            canonical["pertenece_a"], "PERTENECE_A",
+            "Usuario", "Segmento", "user_id", "segment_name",
         )
 
     # ── Derive CONOCE_A in Neo4j (co-attendance inference) ───────────────────
