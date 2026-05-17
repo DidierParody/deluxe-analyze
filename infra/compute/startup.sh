@@ -24,9 +24,12 @@ chown neo4j:neo4j "${NEO4J_HOME}/plugins/${GDS_JAR}"
 # Configure Neo4j
 NEO4J_CONF=/etc/neo4j/neo4j.conf
 
-# Listen on all interfaces
+# Listen on all interfaces (0.0.0.0 is valid for listen, not for advertised)
 sed -i 's/#server.default_listen_address=0.0.0.0/server.default_listen_address=0.0.0.0/' "$NEO4J_CONF"
-sed -i 's/#server.default_advertised_address=localhost/server.default_advertised_address=0.0.0.0/' "$NEO4J_CONF"
+# Advertised address: use the VM's external IP fetched from metadata
+EXTERNAL_IP=$(curl -sf "http://metadata.google.internal/computeMetadata/v1/instance/network-interfaces/0/access-configs/0/externalIp" \
+  -H "Metadata-Flavor: Google" || hostname -I | awk '{print $1}')
+sed -i "s/#server.default_advertised_address=localhost/server.default_advertised_address=${EXTERNAL_IP}/" "$NEO4J_CONF"
 
 # Allow GDS plugin
 echo "dbms.security.procedures.unrestricted=gds.*" >> "$NEO4J_CONF"
