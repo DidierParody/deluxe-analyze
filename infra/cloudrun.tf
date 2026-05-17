@@ -13,7 +13,8 @@ resource "google_cloud_run_v2_job" "dispatcher" {
       service_account = google_service_account.dispatcher.email
 
       containers {
-        image = "${var.region}-docker.pkg.dev/${var.project_id}/deluxe-dispatcher/dispatcher:latest"
+        # Placeholder image for initial apply — deploy-dispatcher.yml updates this via CI/CD
+        image = "us-docker.pkg.dev/cloudrun/container/hello"
 
         env {
           name  = "GCP_PROJECT"

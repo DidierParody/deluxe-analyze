@@ -30,7 +30,7 @@ resource "google_compute_instance" "neo4j" {
   }
 
   metadata = {
-    startup-script        = file("${path.module}/startup.sh")
+    startup-script        = file("${path.module}/compute/startup.sh")
     neo4j-password-secret = google_secret_manager_secret.neo4j_password.secret_id
   }
 }
@@ -55,6 +55,7 @@ resource "google_compute_resource_policy" "neo4j_snapshot" {
 
 resource "google_compute_disk_resource_policy_attachment" "neo4j_snapshot" {
   name = google_compute_resource_policy.neo4j_snapshot.name
-  disk = google_compute_instance.neo4j.boot_disk[0].source
+  # boot_disk[0].source returns the full self_link; disk field needs just the name
+  disk = google_compute_instance.neo4j.name
   zone = var.zone
 }
