@@ -12,7 +12,23 @@ permissions:
   contents: read
 
 jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      wif_configured: ${{ steps.check.outputs.wif_configured }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${{ secrets.WIF_PROVIDER }}" ]; then
+            echo "wif_configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "wif_configured=false" >> "$GITHUB_OUTPUT"
+            echo "⚠️  WIF_PROVIDER not set — skipping GCS deploy. Configure GitHub Secrets to enable."
+          fi
+
   deploy:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.wif_configured == 'true'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
