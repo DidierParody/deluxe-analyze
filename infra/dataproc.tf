@@ -43,7 +43,7 @@ resource "google_dataproc_cluster" "etl" {
       # Cloud NAT (created in network.tf) provides outbound internet for pip installs
     }
 
-    initialization_actions {
+    initialization_action {
       # Installs pydantic-settings and other Python deps not bundled in the
       # Dataproc image.  The etl-deps.zip covers the etl package itself but
       # pydantic-settings must be installed at the OS level.
