@@ -62,16 +62,16 @@ jobs:
           terraform_version: ${{ env.TF_VERSION }}
 
       - name: Generate terraform.tfvars
+        env:
+          # Pass secrets via env: so bash receives the literal value including any
+          # inner double-quotes (direct ${{ }} interpolation in a double-quoted bash
+          # string breaks when the secret value itself contains double-quotes).
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+          ALLOWED_NEO4J_IPS: ${{ secrets.ALLOWED_NEO4J_IPS }}
         run: |
-          # ALLOWED_NEO4J_IPS secret should be a JSON array string, e.g. ["1.2.3.0/24"]
-          # Falls back to empty list if secret is not set, meaning the firewall rule
-          # won't be created via Terraform (must be managed manually for rotating IPs).
-          ALLOWED_IPS="${{ secrets.ALLOWED_NEO4J_IPS }}"
-          if [ -z "$ALLOWED_IPS" ]; then
-            ALLOWED_IPS="[]"
-          fi
+          ALLOWED_IPS="${ALLOWED_NEO4J_IPS:-[]}"
           cat > terraform.tfvars <<EOF
-          project_id         = "${{ secrets.GCP_PROJECT }}"
+          project_id         = "${GCP_PROJECT}"
           region             = "us-central1"
           zone               = "us-central1-a"
           github_repo        = "DidierParody/deluxe-analyze"
