@@ -27,8 +27,11 @@ def load_cdc_parquet(
         "org.apache.hadoop.fs.s3a.SimpleAWSCredentialsProvider",
     )
 
+    # Spark requires the s3a:// scheme; DMS and Lambda use the standard s3:// scheme.
+    s3a_uris = [u.replace("s3://", "s3a://", 1) if u.startswith("s3://") else u for u in s3_uris]
+
     grouped: dict[str, list[str]] = {}
-    for uri in s3_uris:
+    for uri in s3a_uris:
         key = _table_key(uri)
         grouped.setdefault(key, []).append(uri)
 

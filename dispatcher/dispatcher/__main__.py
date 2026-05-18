@@ -25,8 +25,15 @@ def main() -> None:
 
     logger.info(f"Pulled {len(messages)} messages")
 
-    s3_uris = list({msg.message.data.decode() for msg in messages})
+    all_uris = [msg.message.data.decode() for msg in messages]
     ack_ids = [msg.ack_id for msg in messages]
+
+    # Filter out DMS internal status/heartbeat files — only process actual table data.
+    s3_uris = list({u for u in all_uris if "awsdms_status" not in u})
+    if not s3_uris:
+        logger.info("No data URIs after filtering DMS status files; ACKing and exiting.")
+        subscriber.acknowledge(request={"subscription": subscription_path, "ack_ids": ack_ids})
+        sys.exit(0)
 
     logger.info(f"Submitting batch for {len(s3_uris)} unique S3 URIs")
     batch_name = submit_batch(config.GCP_PROJECT, config.GCP_REGION, s3_uris, config)
