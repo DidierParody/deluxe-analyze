@@ -70,6 +70,14 @@ resource "google_service_account_iam_member" "dataproc_agent_act_as_etl" {
   member             = "serviceAccount:service-${data.google_project.project.number}@dataproc-accounts.iam.gserviceaccount.com"
 }
 
+# Cloud Scheduler invokes the dispatcher Cloud Run Job using dispatcher-sa OIDC
+# token.  Without roles/run.invoker the scheduler gets 401 UNAUTHENTICATED.
+resource "google_project_iam_member" "dispatcher_run_invoker" {
+  project = var.project_id
+  role    = "roles/run.invoker"
+  member  = "serviceAccount:${google_service_account.dispatcher.email}"
+}
+
 # dispatcher-sa reads AWS HMAC keys and neo4j-password from Secret Manager
 # when building the Dataproc job submission payload.
 resource "google_project_iam_member" "dispatcher_secret_accessor" {
