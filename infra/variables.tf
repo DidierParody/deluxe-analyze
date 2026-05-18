@@ -26,8 +26,9 @@ variable "github_repo" {
 }
 
 variable "neo4j_machine_type" {
-  type    = string
-  default = "e2-medium"
+  type        = string
+  description = "e2-small (2 GB shared-core) keeps CPUS_ALL_REGIONS usage at 0 so Dataproc Serverless can use the full 12-vCPU quota."
+  default     = "e2-small"
 }
 
 variable "neo4j_disk_size_gb" {
