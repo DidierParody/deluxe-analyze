@@ -31,7 +31,7 @@ def main() -> None:
     logger.info(f"Submitting batch for {len(s3_uris)} unique S3 URIs")
     batch_name = submit_batch(config.GCP_PROJECT, config.GCP_REGION, s3_uris, config)
 
-    success = wait_for_batch(batch_name)
+    success = wait_for_batch(batch_name, region=config.GCP_REGION)
 
     if success:
         logger.info("Batch succeeded, ACKing messages")
