@@ -71,7 +71,15 @@ resource "google_service_account_iam_member" "dataproc_agent_act_as_etl" {
 }
 
 # Cloud Scheduler invokes the dispatcher Cloud Run Job using dispatcher-sa OIDC
-# token.  Without roles/run.invoker the scheduler gets 401 UNAUTHENTICATED.
+# token via the Cloud Run Admin API.
+# - roles/run.developer includes run.jobs.run (required to execute Jobs via API)
+# - roles/run.invoker is for HTTP Cloud Run Services; kept for completeness
+resource "google_project_iam_member" "dispatcher_run_developer" {
+  project = var.project_id
+  role    = "roles/run.developer"
+  member  = "serviceAccount:${google_service_account.dispatcher.email}"
+}
+
 resource "google_project_iam_member" "dispatcher_run_invoker" {
   project = var.project_id
   role    = "roles/run.invoker"
