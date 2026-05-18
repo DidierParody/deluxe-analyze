@@ -115,8 +115,8 @@ def main() -> None:
     # ── Derive CONOCE_A (co-attendance inference — pure Cypher, no GDS needed)
     writer.run_cypher(CONOCE_A_CYPHER)
 
-    # ── Watermark (CDC mode only) ─────────────────────────────────────────────
-    if args.mode == "cdc":
+    # ── Watermark (CDC mode only — skipped if no bucket configured) ──────────
+    if args.mode == "cdc" and config.GCS_WATERMARK_BUCKET:
         wm = Watermark(config.GCS_WATERMARK_BUCKET)
         wm.mark_processed(uris)
 
