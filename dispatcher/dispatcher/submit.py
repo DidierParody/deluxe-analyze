@@ -15,9 +15,16 @@ Why CLI args instead of spark.driverEnv.*:
 
 import time
 
-from google.cloud import dataproc_v1
+from google.cloud import dataproc_v1, secretmanager
 
 from .config import Settings
+
+
+def _get_secret(project: str, secret_id: str) -> str:
+    """Fetch the latest version of a Secret Manager secret."""
+    client = secretmanager.SecretManagerServiceClient()
+    name = f"projects/{project}/secrets/{secret_id}/versions/latest"
+    return client.access_secret_version(request={"name": name}).payload.data.decode()
 
 
 def submit_job(project: str, region: str, s3_uris: list[str], config: Settings) -> str:
@@ -27,6 +34,10 @@ def submit_job(project: str, region: str, s3_uris: list[str], config: Settings) 
     )
 
     artifacts = config.ETL_ARTIFACTS_BUCKET
+
+    # Fetch AWS credentials from Secret Manager so Spark can read S3 Parquet files
+    aws_key = _get_secret(project, "aws-hmac-access-key")
+    aws_secret = _get_secret(project, "aws-hmac-secret-key")
 
     job = dataproc_v1.Job(
         placement=dataproc_v1.JobPlacement(cluster_name=config.DATAPROC_CLUSTER),
@@ -43,6 +54,8 @@ def submit_job(project: str, region: str, s3_uris: list[str], config: Settings) 
                 "--neo4j-user", config.NEO4J_USER,
                 "--neo4j-password", config.NEO4J_PASSWORD,
                 "--neo4j-database", config.NEO4J_DATABASE,
+                "--aws-access-key-id", aws_key,
+                "--aws-secret-access-key", aws_secret,
             ],
         ),
     )

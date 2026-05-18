@@ -23,6 +23,8 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--neo4j-password", default="")
     parser.add_argument("--neo4j-database", default="neo4j")
     parser.add_argument("--gcs-seed-bucket", default="")
+    parser.add_argument("--aws-access-key-id", default="")
+    parser.add_argument("--aws-secret-access-key", default="")
     return parser.parse_args()
 
 
@@ -36,6 +38,8 @@ def _inject_env(args: argparse.Namespace) -> None:
         "NEO4J_PASSWORD": args.neo4j_password,
         "NEO4J_DATABASE": args.neo4j_database,
         "GCS_SEED_BUCKET": args.gcs_seed_bucket,
+        "AWS_ACCESS_KEY_ID": args.aws_access_key_id,
+        "AWS_SECRET_ACCESS_KEY": args.aws_secret_access_key,
     }
     for key, val in mapping.items():
         if val and key not in os.environ:

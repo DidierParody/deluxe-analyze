@@ -14,7 +14,7 @@ class Settings(BaseSettings):
     NEO4J_PASSWORD: str
     NEO4J_DATABASE: str = "neo4j"
 
-    GCS_SEED_BUCKET: str
+    GCS_SEED_BUCKET: str = ""  # Required only in --mode csv
     GCS_WATERMARK_BUCKET: str = ""
 
     # AWS fields — only required in --mode cdc
