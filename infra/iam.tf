@@ -61,6 +61,14 @@ resource "google_service_account_iam_member" "dispatcher_act_as_dataproc_etl" {
   member             = "serviceAccount:${google_service_account.dispatcher.email}"
 }
 
+# dispatcher-sa reads AWS HMAC keys and neo4j-password from Secret Manager
+# when building the Dataproc job submission payload.
+resource "google_project_iam_member" "dispatcher_secret_accessor" {
+  project = var.project_id
+  role    = "roles/secretmanager.secretAccessor"
+  member  = "serviceAccount:${google_service_account.dispatcher.email}"
+}
+
 # ── neo4j-vm-sa bindings ──────────────────────────────────────────────────────
 
 resource "google_project_iam_member" "neo4j_vm_log_writer" {

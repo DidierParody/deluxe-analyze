@@ -20,6 +20,10 @@ class Settings(BaseSettings):
 
     MAX_MESSAGES: int = 1000
 
+    # Watermark — GCS bucket where the ETL writes processed-URI checkpoints.
+    # Empty string disables watermarking (ETL skips silently).
+    GCS_WATERMARK_BUCKET: str = ""
+
     # Cluster auto-provisioning — used when ensure_cluster_exists() recreates
     # the cluster after idle_delete_ttl auto-deletes it.
     ETL_SUBNET: str = "projects/engaged-stage-463123-e0/regions/us-central1/subnetworks/subnet-data"

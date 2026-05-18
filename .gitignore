@@ -20,3 +20,21 @@ infra/.terraform.lock.hcl
 # Jupyter checkpoints
 .ipynb_checkpoints/
 **/.ipynb_checkpoints/
+
+# Generated synthetic data (produced by labs.ipynb — not source artifacts).
+# tickets.csv and reservations.csv are committed intentionally as seed data
+# for the CSV ETL path.
+data/generated/attendance_seed.csv
+data/generated/generation_summary.csv
+data/generated/orders.csv
+data/generated/order_details.csv
+data/generated/payments.csv
+data/generated/table_prices.csv
+
+# Local ETL zip builds (rebuilt by deploy-etl.yml CI)
+etl/*.zip
+etl/**/*.zip
+*.zip
+
+# Cloud SDK / gcloud local state
+.gcloud/

@@ -113,6 +113,7 @@ def submit_job(project: str, region: str, s3_uris: list[str], config: Settings) 
                 "--neo4j-database", config.NEO4J_DATABASE,
                 "--aws-access-key-id", aws_key,
                 "--aws-secret-access-key", aws_secret,
+                "--gcs-watermark-bucket", config.GCS_WATERMARK_BUCKET,
             ],
         ),
     )

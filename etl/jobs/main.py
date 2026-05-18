@@ -25,6 +25,7 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--gcs-seed-bucket", default="")
     parser.add_argument("--aws-access-key-id", default="")
     parser.add_argument("--aws-secret-access-key", default="")
+    parser.add_argument("--gcs-watermark-bucket", default="")
     return parser.parse_args()
 
 
@@ -40,6 +41,7 @@ def _inject_env(args: argparse.Namespace) -> None:
         "GCS_SEED_BUCKET": args.gcs_seed_bucket,
         "AWS_ACCESS_KEY_ID": args.aws_access_key_id,
         "AWS_SECRET_ACCESS_KEY": args.aws_secret_access_key,
+        "GCS_WATERMARK_BUCKET": args.gcs_watermark_bucket,
     }
     for key, val in mapping.items():
         if val and key not in os.environ:
