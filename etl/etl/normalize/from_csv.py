@@ -90,10 +90,19 @@ def normalize_csv(raw: dict[str, DataFrame], prefix: str = "csv") -> dict[str, D
         )
         result["mesas"] = mesas
 
-    # ── Asistio_a (optional — tickets.csv with actual purchases) ─────────────
-    if "tickets" in raw:
+    # ── Asistio_a (optional — tickets.csv + type_tickets.csv) ────────────────
+    # tickets.csv (generated) has: id, user_id, type_ticket_id
+    # type_tickets.csv (seed)   has: id, event_id, ticket_tier
+    # → join on type_ticket_id to resolve event_id and ticket_tier
+    if "tickets" in raw and "type_tickets" in raw:
+        type_tickets_slim = raw["type_tickets"].select(
+            F.col("id").alias("type_ticket_id"),
+            "event_id",
+            "ticket_tier",
+        )
         asistio_a = (
             raw["tickets"]
+            .join(type_tickets_slim, on="type_ticket_id", how="inner")
             .withColumn("user_id", add_namespace("user_id", prefix))
             .withColumn("event_id", add_namespace("event_id", prefix))
             .withColumn("source", F.lit(prefix))
