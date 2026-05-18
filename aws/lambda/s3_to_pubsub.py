@@ -1,30 +1,48 @@
 # Lambda: s3-to-pubsub
 #
-# For GCP auth, this Lambda must have a GCP Workload Identity Pool configured,
-# OR deploy with a GCP service account JSON stored in AWS Secrets Manager.
-# The simpler approach for academic setup: store the GCP SA key in AWS SSM
-# Parameter Store (SecureString) and load it at runtime via boto3.
+# GCP auth: loads a GCP service account JSON key from AWS SSM Parameter Store
+# (SecureString) at cold-start and uses it to obtain short-lived OAuth tokens.
 #
 # Environment variables required:
 #   GCP_PROJECT  — GCP project ID
 #   PUBSUB_TOPIC — Pub/Sub topic name (default: "cdc-events")
+#   SSM_KEY      — SSM parameter name holding the GCP SA JSON key
 
 import json
 import os
 import urllib.request
 import urllib.error
 import base64
-import google.auth
+import boto3
 import google.auth.transport.requests
 from google.oauth2 import service_account
 
 GCP_PROJECT = os.environ["GCP_PROJECT"]
 PUBSUB_TOPIC = os.environ.get("PUBSUB_TOPIC", "cdc-events")
+SSM_KEY = os.environ.get("SSM_KEY", "/deluxe-analyze/gcp-sa-key")
+
+# Cache credentials across warm invocations
+_credentials = None
+
+
+def _load_credentials() -> service_account.Credentials:
+    global _credentials
+    if _credentials is not None and _credentials.valid:
+        return _credentials
+    ssm = boto3.client("ssm", region_name="us-east-1")
+    response = ssm.get_parameter(Name=SSM_KEY, WithDecryption=True)
+    key_json = response["Parameter"]["Value"]
+    sa_info = json.loads(key_json)
+    _credentials = service_account.Credentials.from_service_account_info(
+        sa_info,
+        scopes=["https://www.googleapis.com/auth/pubsub"],
+    )
+    return _credentials
 
 
 def get_access_token() -> str:
-    """Get GCP access token using Application Default Credentials or env var."""
-    creds, _ = google.auth.default(scopes=["https://www.googleapis.com/auth/pubsub"])
+    """Get GCP access token using service account credentials from SSM."""
+    creds = _load_credentials()
     creds.refresh(google.auth.transport.requests.Request())
     return creds.token
 

@@ -9,11 +9,15 @@ requires-python = ">=3.11"
 dependencies = [
     "google-cloud-pubsub>=2.21",
     "google-cloud-dataproc>=5.10",
+    "google-cloud-secret-manager>=2.16",
     "pydantic-settings>=2.0",
 ]
 
 [project.optional-dependencies]
 dev = ["pytest>=8.0", "ruff>=0.4"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["dispatcher"]
 
 [tool.ruff]
 line-length = 100
