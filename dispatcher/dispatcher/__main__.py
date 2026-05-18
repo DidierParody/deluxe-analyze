@@ -2,7 +2,7 @@ import sys
 import logging
 from google.cloud import pubsub_v1
 from .config import Settings
-from .submit import submit_batch, wait_for_batch
+from .submit import ensure_cluster_exists, submit_batch, wait_for_batch
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 logger = logging.getLogger(__name__)
@@ -34,6 +34,9 @@ def main() -> None:
         logger.info("No data URIs after filtering DMS status files; ACKing and exiting.")
         subscriber.acknowledge(request={"subscription": subscription_path, "ack_ids": ack_ids})
         sys.exit(0)
+
+    # Ensure the cluster exists — idle_delete_ttl may have removed it
+    ensure_cluster_exists(config.GCP_PROJECT, config.GCP_REGION, config)
 
     logger.info(f"Submitting batch for {len(s3_uris)} unique S3 URIs")
     batch_name = submit_batch(config.GCP_PROJECT, config.GCP_REGION, s3_uris, config)

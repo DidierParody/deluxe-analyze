@@ -55,7 +55,10 @@ jobs:
           docker push "${IMAGE%:*}:latest"
 
       - name: Update Cloud Run Job
+        env:
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
         run: |
           gcloud run jobs update dispatcher \
-            --image="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/deluxe-dispatcher/dispatcher:${{ github.sha }}" \
-            --region="${{ env.REGION }}"
+            --image="${{ env.REGION }}-docker.pkg.dev/${GCP_PROJECT}/deluxe-dispatcher/dispatcher:${{ github.sha }}" \
+            --region="${{ env.REGION }}" \
+            --project="${GCP_PROJECT}"
