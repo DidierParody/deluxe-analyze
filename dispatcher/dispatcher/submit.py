@@ -13,11 +13,15 @@ Why CLI args instead of spark.driverEnv.*:
   reads them.
 """
 
+import logging
 import time
 
+from google.api_core.exceptions import NotFound
 from google.cloud import dataproc_v1, secretmanager
 
 from .config import Settings
+
+logger = logging.getLogger(__name__)
 
 
 def _get_secret(project: str, secret_id: str) -> str:
@@ -25,6 +29,59 @@ def _get_secret(project: str, secret_id: str) -> str:
     client = secretmanager.SecretManagerServiceClient()
     name = f"projects/{project}/secrets/{secret_id}/versions/latest"
     return client.access_secret_version(request={"name": name}).payload.data.decode()
+
+
+def ensure_cluster_exists(project: str, region: str, config: Settings) -> None:
+    """Create the Dataproc cluster if it does not exist.
+
+    The cluster has idle_delete_ttl=1h, so it self-destructs during quiet
+    periods.  This function recreates it transparently before job submission.
+    """
+    cluster_client = dataproc_v1.ClusterControllerClient(
+        client_options={"api_endpoint": f"{region}-dataproc.googleapis.com:443"}
+    )
+    try:
+        cluster_client.get_cluster(project_id=project, region=region, cluster_name=config.DATAPROC_CLUSTER)
+        logger.info("Cluster %s already exists.", config.DATAPROC_CLUSTER)
+        return
+    except NotFound:
+        logger.info("Cluster %s not found — creating it now.", config.DATAPROC_CLUSTER)
+
+    cluster = dataproc_v1.Cluster(
+        project_id=project,
+        cluster_name=config.DATAPROC_CLUSTER,
+        config=dataproc_v1.ClusterConfig(
+            master_config=dataproc_v1.InstanceGroupConfig(
+                num_instances=1,
+                machine_type_uri="n1-standard-2",
+                disk_config=dataproc_v1.DiskConfig(
+                    boot_disk_type="pd-standard",
+                    boot_disk_size_gb=100,
+                ),
+            ),
+            worker_config=dataproc_v1.InstanceGroupConfig(num_instances=0),
+            software_config=dataproc_v1.SoftwareConfig(image_version="2.2-debian12"),
+            gce_cluster_config=dataproc_v1.GceClusterConfig(
+                subnetwork_uri=config.ETL_SUBNET,
+                service_account=config.DATAPROC_SA,
+                internal_ip_only=True,
+            ),
+            lifecycle_config=dataproc_v1.LifecycleConfig(
+                idle_delete_ttl={"seconds": 3600},
+            ),
+            initialization_actions=[
+                dataproc_v1.NodeInitializationAction(
+                    executable_file=f"gs://{config.ETL_ARTIFACTS_BUCKET}/init/install-etl-deps.sh",
+                    execution_timeout={"seconds": 300},
+                )
+            ],
+        ),
+    )
+
+    operation = cluster_client.create_cluster(project_id=project, region=region, cluster=cluster)
+    logger.info("Waiting for cluster creation (may take ~2 min)…")
+    operation.result(timeout=600)
+    logger.info("Cluster %s created and RUNNING.", config.DATAPROC_CLUSTER)
 
 
 def submit_job(project: str, region: str, s3_uris: list[str], config: Settings) -> str:

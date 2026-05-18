@@ -20,8 +20,12 @@ class Settings(BaseSettings):
 
     MAX_MESSAGES: int = 1000
 
+    # Cluster auto-provisioning — used when ensure_cluster_exists() recreates
+    # the cluster after idle_delete_ttl auto-deletes it.
+    ETL_SUBNET: str = "projects/engaged-stage-463123-e0/regions/us-central1/subnetworks/subnet-data"
+    DATAPROC_SA: str = "dataproc-etl-sa@engaged-stage-463123-e0.iam.gserviceaccount.com"
+
     # Kept for backward compatibility — no longer used by submit.py
-    ETL_SUBNET: str = ""
     DATAPROC_BATCH_TEMPLATE: str = ""
     NEO4J_CONNECTOR_VERSION: str = "5.3.1"
 
