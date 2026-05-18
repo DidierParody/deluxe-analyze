@@ -83,11 +83,11 @@ def main() -> None:
         )
         canonical = normalize_v2(raw)
 
-    # ── Write nodes (always present) ─────────────────────────────────────────
-    writer.write_nodes(canonical["usuarios"], "Usuario")
-    writer.write_nodes(canonical["eventos"], "Evento")
-
-    # ── Write optional nodes ──────────────────────────────────────────────────
+    # ── Write nodes (CDC batches may only contain a subset of tables) ────────
+    if "usuarios" in canonical:
+        writer.write_nodes(canonical["usuarios"], "Usuario")
+    if "eventos" in canonical:
+        writer.write_nodes(canonical["eventos"], "Evento")
     if "mesas" in canonical:
         writer.write_nodes(canonical["mesas"], "Mesa")
     if "segmentos" in canonical:
