@@ -60,7 +60,14 @@ def ensure_cluster_exists(project: str, region: str, config: Settings) -> None:
                 ),
             ),
             worker_config=dataproc_v1.InstanceGroupConfig(num_instances=0),
-            software_config=dataproc_v1.SoftwareConfig(image_version="2.2-debian12"),
+            software_config=dataproc_v1.SoftwareConfig(
+                image_version="2.2-debian12",
+                # Required for zero-worker (single-node) clusters via the API.
+                # gcloud adds this automatically when --num-workers=0; the Python
+                # client does not, so Dataproc would otherwise default to 2 workers
+                # and blow through the DISKS_TOTAL_GB quota on free-tier projects.
+                properties={"dataproc:dataproc.allow.zero.workers": "true"},
+            ),
             gce_cluster_config=dataproc_v1.GceClusterConfig(
                 subnetwork_uri=config.ETL_SUBNET,
                 service_account=config.DATAPROC_SA,
