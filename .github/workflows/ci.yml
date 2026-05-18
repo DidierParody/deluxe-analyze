@@ -5,6 +5,12 @@ on:
     paths:
       - 'etl/**'
       - 'dispatcher/**'
+  push:
+    branches: [main, development]
+    paths:
+      - 'etl/**'
+      - 'dispatcher/**'
+  workflow_dispatch:
 
 jobs:
   lint-and-test:
