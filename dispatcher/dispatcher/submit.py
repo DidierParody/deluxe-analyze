@@ -41,9 +41,23 @@ def ensure_cluster_exists(project: str, region: str, config: Settings) -> None:
         client_options={"api_endpoint": f"{region}-dataproc.googleapis.com:443"}
     )
     try:
-        cluster_client.get_cluster(project_id=project, region=region, cluster_name=config.DATAPROC_CLUSTER)
-        logger.info("Cluster %s already exists.", config.DATAPROC_CLUSTER)
-        return
+        existing = cluster_client.get_cluster(project_id=project, region=region, cluster_name=config.DATAPROC_CLUSTER)
+        state = existing.status.state
+        if state == dataproc_v1.ClusterStatus.State.RUNNING:
+            logger.info("Cluster %s already exists and is RUNNING.", config.DATAPROC_CLUSTER)
+            return
+        if state == dataproc_v1.ClusterStatus.State.ERROR:
+            logger.warning(
+                "Cluster %s is in ERROR state — deleting and recreating.",
+                config.DATAPROC_CLUSTER,
+            )
+            op = cluster_client.delete_cluster(project_id=project, region=region, cluster_name=config.DATAPROC_CLUSTER)
+            op.result(timeout=300)
+            logger.info("ERROR cluster deleted.")
+        else:
+            # CREATING / DELETING / etc. — just wait (don't recreate)
+            logger.info("Cluster %s exists in state %s — assuming it will become RUNNING.", config.DATAPROC_CLUSTER, state)
+            return
     except NotFound:
         logger.info("Cluster %s not found — creating it now.", config.DATAPROC_CLUSTER)
 
@@ -69,6 +83,9 @@ def ensure_cluster_exists(project: str, region: str, config: Settings) -> None:
                 properties={"dataproc:dataproc.allow.zero.workers": "true"},
             ),
             gce_cluster_config=dataproc_v1.GceClusterConfig(
+                # Pin zone to us-central1-a (same as Neo4j VM) so Dataproc
+                # does not auto-select a zone that may have resource shortages.
+                zone_uri="us-central1-a",
                 subnetwork_uri=config.ETL_SUBNET,
                 service_account=config.DATAPROC_SA,
                 internal_ip_only=True,

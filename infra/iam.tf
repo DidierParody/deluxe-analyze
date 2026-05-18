@@ -61,6 +61,15 @@ resource "google_service_account_iam_member" "dispatcher_act_as_dataproc_etl" {
   member             = "serviceAccount:${google_service_account.dispatcher.email}"
 }
 
+# Dataproc service agent must be able to actAs dataproc-etl-sa to create
+# cluster VMs with that custom service account.  Without this binding the
+# cluster enters ERROR state immediately (VM never launches).
+resource "google_service_account_iam_member" "dataproc_agent_act_as_etl" {
+  service_account_id = google_service_account.dataproc_etl.name
+  role               = "roles/iam.serviceAccountUser"
+  member             = "serviceAccount:service-${data.google_project.project.number}@dataproc-accounts.iam.gserviceaccount.com"
+}
+
 # dispatcher-sa reads AWS HMAC keys and neo4j-password from Secret Manager
 # when building the Dataproc job submission payload.
 resource "google_project_iam_member" "dispatcher_secret_accessor" {
