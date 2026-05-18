@@ -43,6 +43,13 @@ resource "google_dataproc_cluster" "etl" {
       # Cloud NAT (created in network.tf) provides outbound internet for pip installs
     }
 
+    lifecycle_config {
+      # Auto-delete cluster after 1 h of inactivity to avoid idle billing.
+      # Cloud Scheduler re-triggers every 15 min; if a job is pending the
+      # cluster stays alive, so the effective idle window is ≤ 75 min.
+      idle_delete_ttl = "3600s"
+    }
+
     initialization_action {
       # Installs pydantic-settings and other Python deps not bundled in the
       # Dataproc image.  The etl-deps.zip covers the etl package itself but

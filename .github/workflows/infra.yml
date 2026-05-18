@@ -75,7 +75,7 @@ jobs:
           region             = "us-central1"
           zone               = "us-central1-a"
           github_repo        = "DidierParody/deluxe-analyze"
-          neo4j_machine_type = "e2-small"
+          neo4j_machine_type = "e2-medium"
           neo4j_disk_size_gb = 50
           allowed_neo4j_ips  = ${ALLOWED_IPS}
           EOF
