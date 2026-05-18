@@ -9,6 +9,9 @@ resource "google_compute_instance" "neo4j" {
   zone         = var.zone
   tags         = ["neo4j-vm"]
 
+  # Required when changing machine_type or service_account on a running VM.
+  allow_stopping_for_update = true
+
   boot_disk {
     initialize_params {
       image = "ubuntu-os-cloud/ubuntu-2204-lts"
