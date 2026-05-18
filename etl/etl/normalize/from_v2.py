@@ -11,7 +11,7 @@ def normalize_v2(raw: dict[str, DataFrame], prefix: str = "v2") -> dict[str, Dat
     if "core.users" in raw:
         df = raw["core.users"]
         usuarios = (
-            df.withColumn("id", add_namespace("user_id", prefix))
+            df.withColumn("id", add_namespace("id", prefix))
             .withColumn("vip_affinity", F.lit(None).cast(DoubleType()))
             .withColumn("invite_power", F.lit(None).cast(DoubleType()))
             .withColumn("newcomer_affinity", F.lit(None).cast(DoubleType()))
@@ -39,7 +39,7 @@ def normalize_v2(raw: dict[str, DataFrame], prefix: str = "v2") -> dict[str, Dat
     if "core.events" in raw:
         df = raw["core.events"]
         eventos = (
-            df.withColumn("id", add_namespace("event_id", prefix))
+            df.withColumn("id", add_namespace("id", prefix))
             .withColumn(
                 "vip_pull",
                 F.col("vip_pull").cast(DoubleType()) if "vip_pull" in df.columns
@@ -91,11 +91,12 @@ def normalize_v2(raw: dict[str, DataFrame], prefix: str = "v2") -> dict[str, Dat
         df = raw["core.dico_tables"]
         table_num_col = (
             "table_number" if "table_number" in df.columns
+            else "number" if "number" in df.columns  # DMS output uses "number"
             else "numero_mesa" if "numero_mesa" in df.columns
             else None
         )
         mesas = (
-            df.withColumn("id", add_namespace("table_id", prefix))
+            df.withColumn("id", add_namespace("id", prefix))
             .withColumn(
                 "event_id",
                 add_namespace("event_id", prefix) if "event_id" in df.columns
@@ -122,19 +123,22 @@ def normalize_v2(raw: dict[str, DataFrame], prefix: str = "v2") -> dict[str, Dat
 
     if "transactions.tickets" in raw:
         df = raw["transactions.tickets"]
-        asistio_a = (
-            df.withColumn("user_id", add_namespace("user_id", prefix))
-            .withColumn("event_id", add_namespace("event_id", prefix))
-            .withColumn(
-                "ticket_tier",
-                F.col("ticket_tier") if "ticket_tier" in df.columns
-                else F.col("tier") if "tier" in df.columns
-                else F.lit(None).cast("string"),
+        # Only build ASISTIO_A if both user_id and event_id FK columns are present.
+        # The DMS tickets table may only have user_id + type_ticket_id (no direct event_id).
+        if "user_id" in df.columns and "event_id" in df.columns:
+            asistio_a = (
+                df.withColumn("user_id", add_namespace("user_id", prefix))
+                .withColumn("event_id", add_namespace("event_id", prefix))
+                .withColumn(
+                    "ticket_tier",
+                    F.col("ticket_tier") if "ticket_tier" in df.columns
+                    else F.col("tier") if "tier" in df.columns
+                    else F.lit(None).cast("string"),
+                )
+                .withColumn("source", F.lit(prefix))
+                .select("user_id", "event_id", "ticket_tier", "source")
             )
-            .withColumn("source", F.lit(prefix))
-            .select("user_id", "event_id", "ticket_tier", "source")
-        )
-        result["asistio_a"] = asistio_a
+            result["asistio_a"] = asistio_a
 
     if "transactions.reservations" in raw:
         df = raw["transactions.reservations"]

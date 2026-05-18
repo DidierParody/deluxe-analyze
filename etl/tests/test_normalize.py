@@ -119,15 +119,15 @@ def test_csv_vip_affinity_cast_to_double(raw_csv):
 
 @pytest.fixture
 def raw_v2(spark: SparkSession) -> dict:
+    # DMS Parquet schema: PK is "id" for entity tables (users, events, dico_tables).
+    # FK columns in relationship tables (tickets, reservations) keep user_id/event_id names.
     users = spark.createDataFrame(
         [("100", "tg100", "bob")],
-        ["user_id", "telegram_id", "username"],
+        ["id", "telegram_id", "username"],
     )
     events = spark.createDataFrame(
-        [("200", "Electro Night", "general", "medium", "0.4",
-          "2026-02-10", "2026-02-10T23:00:00", "2026-02-11T05:00:00", "1")],
-        ["event_id", "name", "event_type", "expected_demand_level", "vip_pull",
-         "event_date", "start_time", "end_time", "event_state_id"],
+        [("200", "Electro Night", "2026-02-10T23:00:00", "2026-02-11T05:00:00", "1")],
+        ["id", "name", "start_time", "end_time", "event_state_id"],
     )
     tickets = spark.createDataFrame(
         [("100", "200", "general")],
