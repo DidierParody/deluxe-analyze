@@ -1,3 +1,4 @@
+import json
 import sys
 import logging
 from google.cloud import pubsub_v1
@@ -25,11 +26,24 @@ def main() -> None:
 
     logger.info(f"Pulled {len(messages)} messages")
 
-    all_uris = [msg.message.data.decode() for msg in messages]
     ack_ids = [msg.ack_id for msg in messages]
 
-    # Filter out DMS internal status/heartbeat files — only process actual table data.
-    s3_uris = list({u for u in all_uris if "awsdms_status" not in u})
+    # Each message payload is JSON: {"bucket": "...", "key": "...", ...}
+    # Build s3://bucket/key URIs and filter out DMS internal status files.
+    s3_uris = []
+    for msg in messages:
+        try:
+            payload = json.loads(msg.message.data.decode())
+            bucket = payload.get("bucket", "")
+            key = payload.get("key", "")
+            if not bucket or not key:
+                continue
+            if "awsdms_status" in key:
+                continue
+            s3_uris.append(f"s3://{bucket}/{key}")
+        except (json.JSONDecodeError, AttributeError) as exc:
+            logger.warning("Skipping malformed message: %s", exc)
+    s3_uris = list(set(s3_uris))  # deduplicate
     if not s3_uris:
         logger.info("No data URIs after filtering DMS status files; ACKing and exiting.")
         subscriber.acknowledge(request={"subscription": subscription_path, "ack_ids": ack_ids})
