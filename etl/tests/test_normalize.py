@@ -48,10 +48,16 @@ def raw_csv(spark: SparkSession) -> dict:
         ["id", "name", "event_type", "expected_demand_level", "vip_pull",
          "event_date", "start_hour_bucket", "event_state"],
     )
-    # tickets = actual purchases (transactional, arrives via CDC)
+    # tickets.csv has: user_id, type_ticket_id (NOT event_id directly).
+    # type_tickets.csv is the catalog that maps type_ticket_id → event_id + ticket_tier.
+    # normalize_csv joins them to produce asistio_a.
     tickets = spark.createDataFrame(
-        [("1", "10", "vip")],
-        ["user_id", "event_id", "ticket_tier"],
+        [("1", "99")],
+        ["user_id", "type_ticket_id"],
+    )
+    type_tickets = spark.createDataFrame(
+        [("99", "10", "vip")],
+        ["id", "event_id", "ticket_tier"],
     )
     # dico_tables.csv: pk="id", table number="number", is_vip via vip_suitability
     dico_tables = spark.createDataFrame(
@@ -74,6 +80,7 @@ def raw_csv(spark: SparkSession) -> dict:
         "users": users,
         "events": events,
         "tickets": tickets,
+        "type_tickets": type_tickets,
         "dico_tables": dico_tables,
         "reservations": reservations,
         "segments": segments,
