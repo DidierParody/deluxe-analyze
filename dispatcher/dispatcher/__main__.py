@@ -28,20 +28,39 @@ def main() -> None:
 
     ack_ids = [msg.ack_id for msg in messages]
 
-    # Each message payload is JSON: {"bucket": "...", "key": "...", ...}
-    # Build s3://bucket/key URIs and filter out DMS internal status files.
+    # Support two message formats:
+    #
+    # 1. Lambda (production): data = base64(s3://bucket/key), attributes = {table: ...}
+    #    The Lambda in aws/lambda/s3_to_pubsub.py encodes the raw S3 URI as the
+    #    message body.
+    #
+    # 2. JSON (manual tests / future): data = base64({"bucket":..., "key":...})
+    #    Used when publishing test messages manually via gcloud pubsub topics publish.
     s3_uris = []
     for msg in messages:
         try:
-            payload = json.loads(msg.message.data.decode())
-            bucket = payload.get("bucket", "")
-            key = payload.get("key", "")
-            if not bucket or not key:
+            raw = msg.message.data.decode()
+            if not raw:
+                logger.warning("Skipping empty message")
                 continue
-            if "awsdms_status" in key:
+
+            # Try JSON format first
+            try:
+                payload = json.loads(raw)
+                bucket = payload.get("bucket", "")
+                key = payload.get("key", "")
+                s3_uri = f"s3://{bucket}/{key}" if bucket and key else None
+            except json.JSONDecodeError:
+                # Lambda format: raw S3 URI string
+                s3_uri = raw if raw.startswith("s3://") else None
+
+            if not s3_uri:
+                logger.warning("Unrecognised message format, skipping: %.80s", raw)
                 continue
-            s3_uris.append(f"s3://{bucket}/{key}")
-        except (json.JSONDecodeError, AttributeError) as exc:
+            if "awsdms_status" in s3_uri:
+                continue
+            s3_uris.append(s3_uri)
+        except AttributeError as exc:
             logger.warning("Skipping malformed message: %s", exc)
     s3_uris = list(set(s3_uris))  # deduplicate
     if not s3_uris:
