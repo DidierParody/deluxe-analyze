@@ -27,7 +27,9 @@ class _EventRecommendationScreenState extends State<EventRecommendationScreen> {
 
   void _load() {
     if (_user == null) return;
-    setState(() => _future = DashboardApi().eventRecommendations(_user!.id, limit: 5));
+    setState(() {
+      _future = DashboardApi().eventRecommendations(_user!.id, limit: 5);
+    });
   }
 
   @override

@@ -29,7 +29,9 @@ class _PromoReachScreenState extends State<PromoReachScreen> {
 
   void _load() {
     if (_user == null) return;
-    setState(() => _future = DashboardApi().promoReach(_user!.id));
+    setState(() {
+      _future = DashboardApi().promoReach(_user!.id);
+    });
   }
 
   @override

@@ -49,7 +49,9 @@ resource "google_cloud_run_v2_service" "dashboard_api" {
     service_account = google_service_account.dashboard_api.email
 
     scaling {
-      min_instance_count = 0
+      # min=1 keeps the GDS projection warm in memory (Louvain on cold start
+      # takes ~40s; with min=1 subsequent queries are <1s).
+      min_instance_count = 1
       max_instance_count = 3
     }
 

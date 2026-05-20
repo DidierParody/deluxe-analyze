@@ -9,7 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from . import queries
 from .auth import require_api_key
+from .cache import cached
 from .config import Settings
+
+_GDS_CACHE_TTL = 300  # 5 minutes
 from .neo4j_client import (
     close_driver,
     ensure_projection,
@@ -107,7 +110,11 @@ def influencers(
     _key: str = Depends(require_api_key),
 ) -> InfluencersResponse:
     ensure_projection()
-    rows = run_query(queries.INFLUENCERS, {"limit": limit, "graph": settings.GDS_GRAPH_NAME})
+    rows = cached(
+        f"influencers:{limit}",
+        _GDS_CACHE_TTL,
+        lambda: run_query(queries.INFLUENCERS, {"limit": limit, "graph": settings.GDS_GRAPH_NAME}),
+    )
     ranking = [
         InfluencerEntry(
             rank=i + 1,
@@ -154,7 +161,11 @@ def communities(
     _key: str = Depends(require_api_key),
 ) -> CommunitiesResponse:
     ensure_projection()
-    rows = run_query(queries.COMMUNITIES, {"graph": settings.GDS_GRAPH_NAME})
+    rows = cached(
+        "communities:all",
+        _GDS_CACHE_TTL,
+        lambda: run_query(queries.COMMUNITIES, {"graph": settings.GDS_GRAPH_NAME}),
+    )
     dominant: list[CommunityEntry] = []
     niches_count = 0
     niches_members = 0
@@ -186,7 +197,11 @@ def brokers(
     _key: str = Depends(require_api_key),
 ) -> BrokersResponse:
     ensure_projection()
-    rows = run_query(queries.BROKERS, {"limit": limit, "graph": settings.GDS_GRAPH_NAME})
+    rows = cached(
+        f"brokers:{limit}",
+        _GDS_CACHE_TTL,
+        lambda: run_query(queries.BROKERS, {"limit": limit, "graph": settings.GDS_GRAPH_NAME}),
+    )
     ranking = [
         BrokerEntry(
             rank=i + 1,
