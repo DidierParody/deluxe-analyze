@@ -5,11 +5,13 @@ on:
     paths:
       - 'etl/**'
       - 'dispatcher/**'
+      - 'dashboard/backend/**'
   push:
     branches: [main, development]
     paths:
       - 'etl/**'
       - 'dispatcher/**'
+      - 'dashboard/backend/**'
   workflow_dispatch:
 
 jobs:
@@ -31,6 +33,9 @@ jobs:
       - name: Lint Dispatcher
         run: ruff check dispatcher/
 
+      - name: Lint Dashboard backend
+        run: ruff check dashboard/backend/
+
       - name: Set up Java 17 for PySpark
         uses: actions/setup-java@v4
         with:
@@ -42,3 +47,9 @@ jobs:
 
       - name: Test ETL
         run: pytest etl/tests/ -v --tb=short
+
+      - name: Install Dashboard backend dev deps
+        run: pip install -e "dashboard/backend/[dev]"
+
+      - name: Test Dashboard backend
+        run: pytest dashboard/backend/tests/ -v --tb=short
