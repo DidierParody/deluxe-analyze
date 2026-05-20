@@ -61,7 +61,7 @@ app.add_middleware(
 )
 
 
-@app.get("/healthz", response_model=HealthResponse, tags=["health"])
+@app.get("/health", response_model=HealthResponse, tags=["health"])
 def healthz() -> HealthResponse:
     return HealthResponse(status="ok")
 

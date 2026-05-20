@@ -8,7 +8,7 @@ guarded by an `X-API-Key` header.
 
 | Method | Path | Purpose |
 |---|---|---|
-| GET | `/healthz` | health check (no auth) |
+| GET | `/health` | health check (no auth) |
 | GET | `/users?limit=` | user list for picker |
 | GET | `/promo-reach/{user_id}` | k-hop reach + per-hop breakdown |
 | GET | `/influencers?limit=` | top PageRank users |

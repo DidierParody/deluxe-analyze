@@ -2,7 +2,7 @@
 
 
 def test_healthz_no_auth(client):
-    res = client.get("/healthz")
+    res = client.get("/health")
     assert res.status_code == 200
     assert res.json() == {"status": "ok"}
 

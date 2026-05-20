@@ -18,7 +18,7 @@ class DashboardApi {
 
   Future<bool> health() async {
     try {
-      final res = await _dio.get('/healthz');
+      final res = await _dio.get('/health');
       return res.statusCode == 200;
     } catch (_) {
       return false;
