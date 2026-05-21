@@ -1,4 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Required for release builds to make HTTPS requests to the dashboard
+         backend. The debug manifest has its own INTERNET permission added by
+         the Flutter tool, but release/profile builds need it declared here. -->
+    <uses-permission android:name="android.permission.INTERNET" />
+
     <application
         android:label="deluxe_dashboard"
         android:name="${applicationName}"

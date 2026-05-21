@@ -14,9 +14,24 @@ class ApiClient {
     return _instance!;
   }
 
+  // Compile-time defaults (set via --dart-define at build time).
+  // Fallback to dotenv (used during development with `flutter run`).
+  static const _kCompileBackendUrl = String.fromEnvironment(
+    'BACKEND_URL',
+    defaultValue: 'https://dashboard-api-67093133884.us-central1.run.app',
+  );
+  static const _kCompileApiKey = String.fromEnvironment(
+    'DASHBOARD_API_KEY',
+    defaultValue: 'OSqiqePvE5KlZ276W2MarMaHHeiYp9hQPWhVupEw',
+  );
+
   static Dio _build() {
-    final baseUrl = dotenv.maybeGet('BACKEND_URL') ?? 'http://localhost:8080';
-    final apiKey = dotenv.maybeGet('DASHBOARD_API_KEY') ?? '';
+    final baseUrl = _kCompileBackendUrl.isNotEmpty
+        ? _kCompileBackendUrl
+        : (dotenv.maybeGet('BACKEND_URL') ?? 'http://localhost:8080');
+    final apiKey = _kCompileApiKey.isNotEmpty
+        ? _kCompileApiKey
+        : (dotenv.maybeGet('DASHBOARD_API_KEY') ?? '');
 
     final dio = Dio(
       BaseOptions(
