@@ -1,0 +1,73 @@
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+import 'exceptions.dart';
+
+/// Builds the singleton Dio client used to talk to the dashboard backend.
+class ApiClient {
+  ApiClient._();
+
+  static Dio? _instance;
+
+  static Dio get instance {
+    _instance ??= _build();
+    return _instance!;
+  }
+
+  // Compile-time defaults (set via --dart-define at build time).
+  // Fallback to dotenv (used during development with `flutter run`).
+  static const _kCompileBackendUrl = String.fromEnvironment(
+    'BACKEND_URL',
+    defaultValue: 'https://dashboard-api-67093133884.us-central1.run.app',
+  );
+  static const _kCompileApiKey = String.fromEnvironment(
+    'DASHBOARD_API_KEY',
+    defaultValue: 'OSqiqePvE5KlZ276W2MarMaHHeiYp9hQPWhVupEw',
+  );
+
+  static Dio _build() {
+    final baseUrl = _kCompileBackendUrl.isNotEmpty
+        ? _kCompileBackendUrl
+        : (dotenv.maybeGet('BACKEND_URL') ?? 'http://localhost:8080');
+    final apiKey = _kCompileApiKey.isNotEmpty
+        ? _kCompileApiKey
+        : (dotenv.maybeGet('DASHBOARD_API_KEY') ?? '');
+
+    final dio = Dio(
+      BaseOptions(
+        baseUrl: baseUrl,
+        connectTimeout: const Duration(seconds: 15),
+        receiveTimeout: const Duration(seconds: 90),
+        responseType: ResponseType.json,
+      ),
+    );
+
+    dio.interceptors.add(
+      InterceptorsWrapper(
+        onRequest: (options, handler) {
+          if (apiKey.isNotEmpty) {
+            options.headers['X-API-Key'] = apiKey;
+          }
+          handler.next(options);
+        },
+        onError: (e, handler) {
+          if (e.response?.statusCode == 401) {
+            handler.reject(
+              DioException(
+                requestOptions: e.requestOptions,
+                error: UnauthorizedException(
+                  'Invalid or missing API key',
+                ),
+                response: e.response,
+              ),
+            );
+            return;
+          }
+          handler.next(e);
+        },
+      ),
+    );
+
+    return dio;
+  }
+}

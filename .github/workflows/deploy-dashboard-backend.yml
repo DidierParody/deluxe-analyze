@@ -1,0 +1,67 @@
+name: Deploy Dashboard Backend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'dashboard/backend/**'
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  check-secrets:
+    runs-on: ubuntu-latest
+    outputs:
+      wif_configured: ${{ steps.check.outputs.wif_configured }}
+    steps:
+      - id: check
+        run: |
+          if [ -n "${{ secrets.WIF_PROVIDER }}" ]; then
+            echo "wif_configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "wif_configured=false" >> "$GITHUB_OUTPUT"
+            echo "WIF_PROVIDER not set — skipping deploy."
+          fi
+
+  deploy:
+    needs: check-secrets
+    if: needs.check-secrets.outputs.wif_configured == 'true'
+    runs-on: ubuntu-latest
+    env:
+      REGION: us-central1
+      REPO: dashboard-api
+      SERVICE: dashboard-api
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.WIF_PROVIDER }}
+          service_account: ${{ secrets.WIF_SERVICE_ACCOUNT }}
+
+      - uses: google-github-actions/setup-gcloud@v2
+
+      - name: Configure Docker for Artifact Registry
+        run: gcloud auth configure-docker ${{ env.REGION }}-docker.pkg.dev
+
+      - name: Build and push image
+        run: |
+          IMAGE="${{ env.REGION }}-docker.pkg.dev/${{ secrets.GCP_PROJECT }}/${{ env.REPO }}/${{ env.SERVICE }}:${{ github.sha }}"
+          docker build -t "$IMAGE" dashboard/backend/
+          docker push "$IMAGE"
+          docker tag "$IMAGE" "${IMAGE%:*}:latest"
+          docker push "${IMAGE%:*}:latest"
+
+      - name: Deploy to Cloud Run
+        env:
+          GCP_PROJECT: ${{ secrets.GCP_PROJECT }}
+        run: |
+          IMAGE="${{ env.REGION }}-docker.pkg.dev/${GCP_PROJECT}/${{ env.REPO }}/${{ env.SERVICE }}:${{ github.sha }}"
+          gcloud run services update ${{ env.SERVICE }} \
+            --image="$IMAGE" \
+            --region="${{ env.REGION }}" \
+            --project="${GCP_PROJECT}"

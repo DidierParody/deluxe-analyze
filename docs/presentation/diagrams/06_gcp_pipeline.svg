@@ -1,0 +1,91 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" font-family="Inter, sans-serif">
+  <defs>
+    <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0,0 L10,5 L0,10 z" fill="#34d399"/></marker>
+  </defs>
+  <rect width="1200" height="700" fill="#050605"/>
+  <text x="600" y="40" fill="#fff" font-size="22" font-weight="800" text-anchor="middle">Pipeline GCP · Scheduler → Dispatcher → Dataproc → Neo4j</text>
+
+  <g font-size="13" fill="#d1d5db">
+    <g transform="translate(40,100)">
+      <rect width="200" height="100" rx="12" fill="#0c100e" stroke="#10b981"/>
+      <text x="14" y="26" fill="#fff" font-size="14" font-weight="700">Cloud Scheduler</text>
+      <text x="14" y="48" font-size="11" fill="#9ca3af">dispatcher-trigger</text>
+      <text x="14" y="68" font-size="11">cron */15 * * * *</text>
+      <text x="14" y="84" font-size="11" fill="#34d399">oauth_token + Cloud Run Admin v2</text>
+    </g>
+
+    <g transform="translate(280,100)">
+      <rect width="240" height="100" rx="12" fill="#0c100e" stroke="#10b981"/>
+      <text x="14" y="26" fill="#fff" font-size="14" font-weight="700">Cloud Run Job</text>
+      <text x="14" y="48" font-size="11" fill="#9ca3af">dispatcher</text>
+      <text x="14" y="68" font-size="11">pull Pub/Sub → submit batch</text>
+      <text x="14" y="84" font-size="11" fill="#34d399">ACK selectivo (at-least-once)</text>
+    </g>
+
+    <g transform="translate(560,100)">
+      <rect width="240" height="100" rx="12" fill="#0c100e" stroke="#10b981"/>
+      <text x="14" y="26" fill="#fff" font-size="14" font-weight="700">Dataproc cluster</text>
+      <text x="14" y="48" font-size="11" fill="#9ca3af">deluxe-etl-cluster</text>
+      <text x="14" y="68" font-size="11">n1-standard-2, single-node</text>
+      <text x="14" y="84" font-size="11" fill="#34d399">idle_delete_ttl=1h</text>
+    </g>
+
+    <g transform="translate(840,100)">
+      <rect width="320" height="100" rx="12" fill="#0c100e" stroke="#10b981" stroke-width="1.5"/>
+      <text x="14" y="26" fill="#fff" font-size="14" font-weight="700">Neo4j VM</text>
+      <text x="14" y="48" font-size="11" fill="#9ca3af">e2-medium · pd-balanced 50GB</text>
+      <text x="14" y="68" font-size="11">IP estática · snapshot diario</text>
+      <text x="14" y="84" font-size="11" fill="#34d399">subnet-graph · neo4j-vm tag</text>
+    </g>
+  </g>
+
+  <!-- Arrows top row -->
+  <path d="M240,150 L280,150" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <path d="M520,150 L560,150" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <text x="540" y="138" fill="#34d399" font-size="10" text-anchor="middle">submit batch</text>
+  <path d="M800,150 L840,150" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#ar)"/>
+  <text x="820" y="138" fill="#34d399" font-size="10" text-anchor="middle">Bolt</text>
+
+  <!-- detail panels -->
+  <g transform="translate(40,250)">
+    <rect width="560" height="180" rx="14" fill="#0c100e" stroke="#374151"/>
+    <text x="20" y="28" fill="#34d399" font-size="13" font-weight="700">DISPATCHER LIFECYCLE</text>
+    <g transform="translate(20,52)" font-size="12" fill="#d1d5db">
+      <text y="0">1. subscriber.pull(max_messages=1000)</text>
+      <text y="20">2. parse mensajes (Lambda raw URI o JSON manual)</text>
+      <text y="40">3. filtra DMS status files</text>
+      <text y="60">4. ensure_cluster_exists() — recrea si ERROR / TTL</text>
+      <text y="80">5. submit Spark batch con S3 URIs como arg</text>
+      <text y="100">6. wait_for_batch — polling estado</text>
+      <text y="120">7. SUCCEEDED → ACK · FAILED → NACK (deadline 0) → DLQ</text>
+    </g>
+  </g>
+
+  <g transform="translate(620,250)">
+    <rect width="540" height="180" rx="14" fill="#0c100e" stroke="#374151"/>
+    <text x="20" y="28" fill="#34d399" font-size="13" font-weight="700">SERVICE ACCOUNTS (mínimo privilegio)</text>
+    <g transform="translate(20,52)" font-size="11" fill="#d1d5db" font-family="ui-monospace,monospace">
+      <text y="0">dataproc-etl-sa     · worker, storageAdmin, secretAccessor</text>
+      <text y="20">dispatcher-sa       · pubsub.subscriber, dataproc.editor,</text>
+      <text y="36">                      run.developer, run.invoker</text>
+      <text y="56">neo4j-vm-sa         · logWriter, metricWriter</text>
+      <text y="76">dashboard-api-sa    · secretAccessor</text>
+      <text y="96">github-actions-sa   · editor (via WIF, no JSON key)</text>
+      <text y="120" font-family="Inter,sans-serif" fill="#9ca3af">Dataproc service agent (Google-managed) tiene</text>
+      <text y="135" font-family="Inter,sans-serif" fill="#9ca3af">iam.serviceAccountUser sobre dataproc-etl-sa.</text>
+    </g>
+  </g>
+
+  <g transform="translate(40,460)">
+    <rect width="1120" height="200" rx="14" fill="#0c100e" stroke="#10b981" stroke-width="1.5"/>
+    <text x="20" y="28" fill="#34d399" font-size="13" font-weight="700">DECISIONES TÉCNICAS</text>
+    <g transform="translate(20,55)" font-size="12" fill="#d1d5db">
+      <text y="0">• Cloud Run <tspan font-weight="700" fill="#fff">Job</tspan> (no Service) — lifecycle batch corto, costo cero idle</text>
+      <text y="22">• Scheduler usa <tspan font-weight="700" fill="#fff">oauth_token</tspan> (no OIDC) porque llama Cloud Run Admin API (Google API, requiere OAuth 2.0)</text>
+      <text y="44">• Scheduler URI: <tspan font-family="ui-monospace,monospace" fill="#6ee7b7">run.googleapis.com/v2/projects/.../jobs/:run</tspan> (v2 global cubre Jobs, v1 regional solo Services)</text>
+      <text y="66">• Mensaje Pub/Sub: parse híbrido — formato raw URI de Lambda real + JSON para tests manuales</text>
+      <text y="88">• at-least-once garantizado: ACK selectivo según éxito del batch · idempotencia en Neo4j vía MERGE</text>
+      <text y="110">• Watermark en GCS como defensa adicional contra duplicados si el ACK falla</text>
+    </g>
+  </g>
+</svg>

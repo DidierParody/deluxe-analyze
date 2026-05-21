@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard Mockups — deluxe-analyze</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: radial-gradient(ellipse at top, #0d1410 0%, #050605 60%);
+    color: #e8e8e8;
+    font-family: 'Inter', system-ui, sans-serif;
+    padding: 32px 16px 64px;
+    min-height: 100vh;
+  }
+  .page-header {
+    max-width: 1400px;
+    margin: 0 auto 32px;
+    padding: 0 16px;
+  }
+  .page-header h1 {
+    font-size: 28px;
+    font-weight: 800;
+    background: linear-gradient(90deg, #34d399, #6b7280);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 8px;
+  }
+  .page-header p {
+    color: #888;
+    font-size: 14px;
+    max-width: 700px;
+    line-height: 1.6;
+  }
+  .grid {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 32px;
+    justify-items: center;
+  }
+
+  /* Phone frame */
+  .phone {
+    width: 360px;
+    height: 720px;
+    background: #16181a;
+    border-radius: 40px;
+    padding: 12px;
+    box-shadow: 0 10px 40px rgba(16, 185, 129, 0.10), 0 0 0 1px rgba(255,255,255,0.06);
+    position: relative;
+  }
+  .phone::before {
+    content: '';
+    position: absolute;
+    top: 18px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 24px;
+    background: #000;
+    border-radius: 14px;
+    z-index: 10;
+  }
+  .screen {
+    width: 100%;
+    height: 100%;
+    background: #0c100e;
+    border-radius: 30px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    color: #e8e8e8;
+  }
+  .screen-label {
+    position: absolute;
+    top: -28px;
+    left: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    color: #34d399;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+
+  /* App bar */
+  .appbar {
+    padding: 56px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .appbar .back {
+    width: 36px; height: 36px;
+    border-radius: 18px;
+    background: rgba(255,255,255,0.06);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    color: #e8e8e8;
+  }
+  .appbar h2 {
+    font-size: 17px;
+    font-weight: 600;
+  }
+  .appbar .subtitle {
+    font-size: 12px;
+    color: #888;
+    margin-top: 2px;
+  }
+
+  /* Content */
+  .content { flex: 1; overflow-y: auto; padding: 0 20px 24px; }
+
+  /* HOME screen specific */
+  .home-greeting {
+    padding: 0 20px 12px;
+  }
+  .home-greeting .hello {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 4px;
+  }
+  .home-greeting h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .home-greeting .meta {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+  }
+  .home-cards { padding: 0 20px 24px; display: flex; flex-direction: column; gap: 12px; }
+  .feature-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+  }
+  .feature-card .ico {
+    width: 44px; height: 44px;
+    border-radius: 14px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .feature-card .text { flex: 1; min-width: 0; }
+  .feature-card .text .title { font-weight: 600; font-size: 14px; margin-bottom: 2px; }
+  .feature-card .text .desc { font-size: 11.5px; color: #999; line-height: 1.4; }
+  .feature-card .chev { color: #555; font-size: 14px; }
+  .feature-card.hero {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.14), rgba(6, 78, 59, 0.10));
+    border-color: rgba(16, 185, 129, 0.28);
+  }
+  .feature-card.hero .ico { background: linear-gradient(135deg, #10b981, #064e3b); }
+  .feature-card.q2 .ico { background: rgba(52, 211, 153, 0.10); color: #6ee7b7; }
+  .feature-card.q3 .ico { background: rgba(107, 114, 128, 0.18); color: #d1d5db; }
+  .feature-card.q4 .ico { background: rgba(5, 150, 105, 0.14); color: #34d399; }
+  .feature-card.q5 .ico { background: rgba(75, 85, 99, 0.20); color: #9ca3af; }
+
+  /* KPI */
+  .kpi-card {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.18), rgba(6, 78, 59, 0.20));
+    border: 1px solid rgba(16, 185, 129, 0.30);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .kpi-card .kpi-label {
+    font-size: 11px;
+    color: #6ee7b7;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 600;
+  }
+  .kpi-card .kpi-value {
+    font-size: 56px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #34d399, #6ee7b7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin: 6px 0 2px;
+    line-height: 1;
+  }
+  .kpi-card .kpi-suffix { font-size: 13px; color: #ddd; }
+  .kpi-card .kpi-context { font-size: 12px; color: #aaa; margin-top: 8px; }
+
+  /* User picker */
+  .picker {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    padding: 10px 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .picker .avatar {
+    width: 32px; height: 32px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, #10b981, #064e3b);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff;
+  }
+  .picker .info { flex: 1; }
+  .picker .info .label { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; }
+  .picker .info .name { font-size: 14px; font-weight: 600; }
+  .picker .chev { color: #666; }
+
+  /* Funnel */
+  .funnel-row {
+    display: flex; align-items: center;
+    background: rgba(255,255,255,0.04);
+    border-radius: 12px;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid rgba(255,255,255,0.04);
+  }
+  .funnel-row .hop {
+    font-size: 10px; font-weight: 700; color: #888;
+    width: 50px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .funnel-row .bar-wrap { flex: 1; height: 28px; background: rgba(255,255,255,0.05); border-radius: 6px; overflow: hidden; position: relative; }
+  .funnel-row .bar { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 13px; font-weight: 700; color: #fff; }
+  .funnel-row.h1 .bar { width: 39%;  background: linear-gradient(90deg, #34d399, #6ee7b7); color: #052e1d; }
+  .funnel-row.h2 .bar { width: 90%;  background: linear-gradient(90deg, #10b981, #34d399); color: #052e1d; }
+  .funnel-row.h3 .bar { width: 17%;  background: linear-gradient(90deg, #047857, #059669); }
+
+  /* CTA */
+  .cta {
+    margin-top: 14px;
+    background: linear-gradient(135deg, #10b981, #047857);
+    border: none;
+    color: #052e1d;
+    padding: 14px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    width: 100%;
+    box-shadow: 0 4px 14px rgba(16, 185, 129, 0.25);
+  }
+  .insight-box {
+    background: rgba(255,255,255,0.03);
+    border-left: 3px solid #10b981;
+    border-radius: 8px;
+    padding: 12px 14px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: #cbd5d1;
+  }
+  .insight-box b { color: #34d399; }
+
+  /* Bar chart Q2 */
+  .bar-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px; }
+  .bar-item {
+    display: flex; align-items: center;
+    gap: 10px;
+  }
+  .bar-item .rank {
+    font-size: 11px; font-weight: 700; color: #555;
+    width: 18px;
+    text-align: center;
+  }
+  .bar-item .label {
+    font-size: 12px; font-weight: 500;
+    width: 92px;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .bar-item .bar-wrap {
+    flex: 1; height: 22px;
+    background: rgba(255,255,255,0.04);
+    border-radius: 4px;
+    position: relative;
+  }
+  .bar-item .bar {
+    height: 100%;
+    background: linear-gradient(90deg, #059669, #34d399);
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: flex-end;
+    padding-right: 6px;
+    font-size: 10px; font-weight: 700; color: #052e1d;
+  }
+
+  /* Ranked cards Q3 */
+  .event-card {
+    background: rgba(255,255,255,0.04);
+    border-radius: 14px;
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 14px;
+    margin-bottom: 10px;
+    position: relative;
+  }
+  .event-card .rank-badge {
+    position: absolute;
+    top: 12px; right: 12px;
+    background: rgba(75, 85, 99, 0.30);
+    color: #d1d5db;
+    font-size: 10px; font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 8px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .event-card .ev-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .event-card .ev-friends { font-size: 11.5px; color: #888; margin-bottom: 8px; }
+  .event-card .ev-friends b { color: #34d399; }
+  .event-card .mini-bar-wrap {
+    background: rgba(255,255,255,0.04);
+    height: 6px;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .event-card .mini-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #059669, #34d399);
+    border-radius: 3px;
+  }
+  .event-card.r1 .mini-bar { width: 100%; }
+  .event-card.r2 .mini-bar { width: 71%; }
+  .event-card.r3 .mini-bar { width: 64%; }
+  .event-card.r4 .mini-bar { width: 60%; }
+  .event-card.r5 .mini-bar { width: 56%; }
+
+  /* Treemap Q4 */
+  .treemap {
+    display: grid;
+    grid-template-columns: 2fr 1.4fr;
+    grid-template-rows: 1.4fr 1fr;
+    gap: 4px;
+    height: 320px;
+    margin-bottom: 14px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .tile {
+    padding: 10px 12px;
+    display: flex; flex-direction: column; justify-content: flex-end;
+    color: white;
+    font-weight: 600;
+  }
+  .tile .tile-label { font-size: 11px; opacity: 0.85; }
+  .tile .tile-num { font-size: 22px; font-weight: 800; }
+  .tile.t1 { grid-row: 1 / 3; background: linear-gradient(135deg, #10b981, #047857); }
+  .tile.t2 { background: linear-gradient(135deg, #047857, #065f46); }
+  .tile.t3 { background: linear-gradient(135deg, #065f46, #064e3b); }
+  .tile.t4 { background: linear-gradient(135deg, #374151, #1f2937); }
+
+  /* Lollipop Q5 */
+  .lolly-list { display: flex; flex-direction: column; gap: 12px; margin-bottom: 14px; padding-top: 4px; }
+  .lolly-item { display: flex; align-items: center; gap: 10px; }
+  .lolly-item .rank { font-size: 11px; font-weight: 700; color: #555; width: 18px; text-align: center; }
+  .lolly-item .label { font-size: 12px; font-weight: 500; width: 84px; }
+  .lolly-item .lolly-wrap { flex: 1; height: 16px; position: relative; }
+  .lolly-item .lolly-line {
+    position: absolute;
+    top: 50%; left: 0;
+    height: 2px;
+    background: rgba(156, 163, 175, 0.25);
+    transform: translateY(-50%);
+  }
+  .lolly-item .lolly-dot {
+    position: absolute;
+    top: 50%;
+    width: 12px; height: 12px;
+    background: linear-gradient(135deg, #34d399, #059669);
+    border-radius: 6px;
+    transform: translate(-6px, -50%);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.18);
+  }
+  .lolly-item .lolly-val { font-size: 11px; font-weight: 700; color: #6ee7b7; width: 36px; text-align: right; }
+
+  .section-title {
+    font-size: 12px;
+    text-transform: uppercase;
+    color: #666;
+    letter-spacing: 1px;
+    font-weight: 600;
+    margin: 8px 0 10px;
+  }
+  .legend {
+    display: flex; gap: 12px; align-items: center;
+    font-size: 11px; color: #888;
+    margin-bottom: 12px;
+  }
+  .legend .dot { width: 8px; height: 8px; border-radius: 4px; }
+</style>
+</head>
+<body>
+
+<div class="page-header">
+  <h1>📱 Dashboard de Ventas — Mockups</h1>
+  <p>6 pantallas mobile-first basadas en las top-5 preguntas del playbook Neo4j. Datos reales del grafo. Tipos de gráfico elegidos según literatura estadística (Cleveland-McGill, Shneiderman, Tufte).</p>
+</div>
+
+<div class="grid">
+
+  <!-- ============================================ -->
+  <!--  HOME -->
+  <!-- ============================================ -->
+  <div class="phone">
+    <span class="screen-label">Home</span>
+    <div class="screen">
+      <div class="home-greeting" style="padding-top: 56px;">
+        <div class="hello">👋 Hola, María</div>
+        <h1>Insights de Ventas</h1>
+        <div class="meta">361 clientes activos · 35 eventos · actualizado hace 2 min</div>
+      </div>
+      <div class="content" style="padding: 0;">
+        <div class="home-cards">
+          <div class="feature-card hero">
+            <div class="ico">🚀</div>
+            <div class="text">
+              <div class="title">¿A cuántos llega una promoción?</div>
+              <div class="desc">Elige un cliente y mira hasta dónde llega su red social</div>
+            </div>
+            <span class="chev">›</span>
+          </div>
+          <div class="feature-card q2">
+            <div class="ico">👑</div>
+            <div class="text">
+              <div class="title">Top clientes más influyentes</div>
+              <div class="desc">Los que más arrastran a otros a venir</div>
+            </div>
+            <span class="chev">›</span>
+          </div>
+          <div class="feature-card q3">
+            <div class="ico">🎯</div>
+            <div class="text">
+              <div class="title">¿A qué evento invito al cliente X?</div>
+              <div class="desc">Recomendaciones según sus amigos</div>
+            </div>
+            <span class="chev">›</span>
+          </div>
+          <div class="feature-card q4">
+            <div class="ico">👥</div>
+            <div class="text">
+              <div class="title">Grupos sociales de tus clientes</div>
+              <div class="desc">Quiénes se mueven juntos</div>
+            </div>
+            <span class="chev">›</span>
+          </div>
+          <div class="feature-card q5">
+            <div class="ico">🌉</div>
+            <div class="text">
+              <div class="title">Brokers sociales</div>
+              <div class="desc">Clientes que conectan grupos distintos</div>
+            </div>
+            <span class="chev">›</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  Q1 — Promo reach -->
+  <!-- ============================================ -->
+  <div class="phone">
+    <span class="screen-label">Q1 · Alcance promoción</span>
+    <div class="screen">
+      <div class="appbar">
+        <div class="back">←</div>
+        <div>
+          <h2>Alcance de promoción</h2>
+          <div class="subtitle">Hasta dónde llega la red</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="picker">
+          <div class="avatar">R</div>
+          <div class="info">
+            <div class="label">Cliente</div>
+            <div class="name">Raúl · csv:87</div>
+          </div>
+          <span class="chev">▾</span>
+        </div>
+
+        <div class="kpi-card">
+          <div class="kpi-label">Alcance total</div>
+          <div class="kpi-value">339</div>
+          <div class="kpi-suffix">de 360 clientes</div>
+          <div class="kpi-context">94 % de tu base alcanzable en 3 saltos</div>
+        </div>
+
+        <div class="section-title">Desglose por saltos</div>
+        <div class="funnel-row h1">
+          <div class="hop">1 salto</div>
+          <div class="bar-wrap"><div class="bar">132</div></div>
+        </div>
+        <div class="funnel-row h2">
+          <div class="hop">2 saltos</div>
+          <div class="bar-wrap"><div class="bar">178</div></div>
+        </div>
+        <div class="funnel-row h3">
+          <div class="hop">3 saltos</div>
+          <div class="bar-wrap"><div class="bar">29</div></div>
+        </div>
+
+        <div class="insight-box" style="margin-top: 14px;">
+          💡 <b>Raúl</b> es una excelente palanca: si lo invitas con descuento, 132 amigos directos lo verán y 178 más lo sabrán por su círculo.
+        </div>
+
+        <button class="cta">Lanzar promoción a Raúl →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  Q2 — Influencers (Bar chart) -->
+  <!-- ============================================ -->
+  <div class="phone">
+    <span class="screen-label">Q2 · Más influyentes (PageRank)</span>
+    <div class="screen">
+      <div class="appbar">
+        <div class="back">←</div>
+        <div>
+          <h2>Clientes más influyentes</h2>
+          <div class="subtitle">Por PageRank en CONOCE_A</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="insight-box" style="margin-bottom: 14px;">
+          Estos 10 clientes son el corazón de tu red.<br>Cuando vienen, otros vienen con ellos.
+        </div>
+
+        <div class="bar-list">
+          <div class="bar-item">
+            <span class="rank">1</span><span class="label">Florencia</span>
+            <div class="bar-wrap"><div class="bar" style="width: 100%;">2.38</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">2</span><span class="label">Mía Clara</span>
+            <div class="bar-wrap"><div class="bar" style="width: 99%;">2.36</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">3</span><span class="label">Elisa Luzia</span>
+            <div class="bar-wrap"><div class="bar" style="width: 98.7%;">2.35</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">4</span><span class="label">Sofía</span>
+            <div class="bar-wrap"><div class="bar" style="width: 95%;">2.26</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">5</span><span class="label">Carla Luzia</span>
+            <div class="bar-wrap"><div class="bar" style="width: 91%;">2.17</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">6</span><span class="label">Mariana</span>
+            <div class="bar-wrap"><div class="bar" style="width: 89%;">2.13</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">7</span><span class="label">Abril</span>
+            <div class="bar-wrap"><div class="bar" style="width: 89%;">2.12</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">8</span><span class="label">Sebastián C.</span>
+            <div class="bar-wrap"><div class="bar" style="width: 88%;">2.10</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">9</span><span class="label">Aiden</span>
+            <div class="bar-wrap"><div class="bar" style="width: 87%;">2.08</div></div>
+          </div>
+          <div class="bar-item">
+            <span class="rank">10</span><span class="label">Raúl</span>
+            <div class="bar-wrap"><div class="bar" style="width: 87%;">2.07</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  Q3 — Event recommendations (Ranked cards) -->
+  <!-- ============================================ -->
+  <div class="phone">
+    <span class="screen-label">Q3 · Evento recomendado</span>
+    <div class="screen">
+      <div class="appbar">
+        <div class="back">←</div>
+        <div>
+          <h2>¿Qué evento le invito?</h2>
+          <div class="subtitle">Basado en sus amigos</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="picker">
+          <div class="avatar">R</div>
+          <div class="info">
+            <div class="label">Para el cliente</div>
+            <div class="name">Raúl · csv:87</div>
+          </div>
+          <span class="chev">▾</span>
+        </div>
+
+        <div class="section-title">Top 5 eventos para invitar</div>
+
+        <div class="event-card r1">
+          <div class="rank-badge">#1</div>
+          <div class="ev-name">Noche Deluxe 6</div>
+          <div class="ev-friends"><b>129</b> amigos suyos ya fueron · score 720</div>
+          <div class="mini-bar-wrap"><div class="mini-bar"></div></div>
+        </div>
+        <div class="event-card r2">
+          <div class="rank-badge">#2</div>
+          <div class="ev-name">Evento Especial 4</div>
+          <div class="ev-friends"><b>92</b> amigos · score 514</div>
+          <div class="mini-bar-wrap"><div class="mini-bar"></div></div>
+        </div>
+        <div class="event-card r3">
+          <div class="rank-badge">#3</div>
+          <div class="ev-name">Noche Deluxe 11</div>
+          <div class="ev-friends"><b>87</b> amigos · score 462</div>
+          <div class="mini-bar-wrap"><div class="mini-bar"></div></div>
+        </div>
+        <div class="event-card r4">
+          <div class="rank-badge">#4</div>
+          <div class="ev-name">Noche Deluxe 7</div>
+          <div class="ev-friends"><b>85</b> amigos · score 430</div>
+          <div class="mini-bar-wrap"><div class="mini-bar"></div></div>
+        </div>
+        <div class="event-card r5">
+          <div class="rank-badge">#5</div>
+          <div class="ev-name">Lanzamiento Deluxe 20</div>
+          <div class="ev-friends"><b>67</b> amigos · score 402</div>
+          <div class="mini-bar-wrap"><div class="mini-bar"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  Q4 — Communities (Treemap) -->
+  <!-- ============================================ -->
+  <div class="phone">
+    <span class="screen-label">Q4 · Comunidades</span>
+    <div class="screen">
+      <div class="appbar">
+        <div class="back">←</div>
+        <div>
+          <h2>Grupos sociales</h2>
+          <div class="subtitle">Detección con Louvain</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="insight-box" style="margin-bottom: 14px;">
+          Tu base se divide en <b>5 grupos dominantes</b> + 27 nichos pequeños.<br>
+          Toca un grupo para ver miembros.
+        </div>
+
+        <div class="treemap">
+          <div class="tile t1">
+            <div class="tile-label">Grupo 266</div>
+            <div class="tile-num">98</div>
+            <div style="font-size: 10px; opacity: 0.75; margin-top: 2px;">miembros</div>
+          </div>
+          <div class="tile t2">
+            <div class="tile-label">Grupo 111</div>
+            <div class="tile-num">73</div>
+          </div>
+          <div class="tile t3">
+            <div class="tile-label">Grupo 57</div>
+            <div class="tile-num">65</div>
+          </div>
+          <div class="tile t4">
+            <div class="tile-label">+27 nichos</div>
+            <div class="tile-num">125</div>
+          </div>
+        </div>
+
+        <div class="section-title">Acción sugerida</div>
+        <div class="insight-box">
+          🎯 El <b>Grupo 266</b> (98 personas) es tu mejor target para eventos masivos. Tienen alta cohesión y mismo perfil de consumo.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============================================ -->
+  <!--  Q5 — Brokers (Lollipop) -->
+  <!-- ============================================ -->
+  <div class="phone">
+    <span class="screen-label">Q5 · Brokers sociales</span>
+    <div class="screen">
+      <div class="appbar">
+        <div class="back">←</div>
+        <div>
+          <h2>Brokers sociales</h2>
+          <div class="subtitle">Conectan grupos distintos</div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="insight-box" style="margin-bottom: 14px;">
+          Estos clientes <b>conectan comunidades</b> que de otra forma no se mezclarían. Tu palanca para marketing cruzado.
+        </div>
+
+        <div class="lolly-list">
+          <div class="lolly-item">
+            <span class="rank">1</span><span class="label">csv:250</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 100%;"></div>
+              <div class="lolly-dot" style="left: 100%;"></div>
+            </div>
+            <span class="lolly-val">342</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">2</span><span class="label">csv:276</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 98%;"></div>
+              <div class="lolly-dot" style="left: 98%;"></div>
+            </div>
+            <span class="lolly-val">335</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">3</span><span class="label">csv:50</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 97%;"></div>
+              <div class="lolly-dot" style="left: 97%;"></div>
+            </div>
+            <span class="lolly-val">331</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">4</span><span class="label">csv:118</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 95%;"></div>
+              <div class="lolly-dot" style="left: 95%;"></div>
+            </div>
+            <span class="lolly-val">324</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">5</span><span class="label">csv:97</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 94%;"></div>
+              <div class="lolly-dot" style="left: 94%;"></div>
+            </div>
+            <span class="lolly-val">322</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">6</span><span class="label">csv:207</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 92%;"></div>
+              <div class="lolly-dot" style="left: 92%;"></div>
+            </div>
+            <span class="lolly-val">314</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">7</span><span class="label">csv:64</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 89%;"></div>
+              <div class="lolly-dot" style="left: 89%;"></div>
+            </div>
+            <span class="lolly-val">304</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">8</span><span class="label">csv:69</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 88%;"></div>
+              <div class="lolly-dot" style="left: 88%;"></div>
+            </div>
+            <span class="lolly-val">303</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">9</span><span class="label">csv:77</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 87%;"></div>
+              <div class="lolly-dot" style="left: 87%;"></div>
+            </div>
+            <span class="lolly-val">297</span>
+          </div>
+          <div class="lolly-item">
+            <span class="rank">10</span><span class="label">csv:232</span>
+            <div class="lolly-wrap">
+              <div class="lolly-line" style="width: 86%;"></div>
+              <div class="lolly-dot" style="left: 86%;"></div>
+            </div>
+            <span class="lolly-val">296</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+</body>
+</html>
