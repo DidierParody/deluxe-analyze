@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" font-family="Inter, sans-serif">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/></linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="#050605"/>
+
+  <text x="600" y="38" fill="#fff" font-size="22" font-weight="800" text-anchor="middle">Infraestructura como código · CI/CD federado · cero claves de larga vida</text>
+
+  <!-- Left column: Terraform -->
+  <rect x="40" y="80" width="380" height="580" rx="20" fill="#0c100e" stroke="#374151"/>
+  <text x="60" y="115" fill="#9ca3af" font-size="12" font-weight="700" letter-spacing="2">IaC</text>
+  <text x="60" y="142" fill="#fff" font-size="20" font-weight="800">Terraform · infra/</text>
+
+  <g transform="translate(60,170)" font-size="12" font-family="ui-monospace,monospace" fill="#d1d5db">
+    <text y="0">├ apis.tf</text>
+    <text y="20">├ backend.tf      <tspan fill="#6b7280">(GCS state)</tspan></text>
+    <text y="40">├ providers.tf</text>
+    <text y="60">├ variables.tf</text>
+    <text y="80">├ outputs.tf</text>
+    <text y="100">├ network.tf      <tspan fill="#34d399">VPC + subnets</tspan></text>
+    <text y="120">├ firewall.tf     <tspan fill="#34d399">+ whitelist</tspan></text>
+    <text y="140">├ iam.tf          <tspan fill="#34d399">6 SAs + WIF</tspan></text>
+    <text y="160">├ secrets.tf      <tspan fill="#34d399">5 secrets</tspan></text>
+    <text y="180">├ storage.tf      <tspan fill="#34d399">3 buckets</tspan></text>
+    <text y="200">├ pubsub.tf       <tspan fill="#34d399">topic + sub + DLQ</tspan></text>
+    <text y="220">├ compute.tf      <tspan fill="#34d399">Neo4j VM</tspan></text>
+    <text y="240">├ dataproc.tf     <tspan fill="#34d399">cluster spec</tspan></text>
+    <text y="260">├ cloudrun.tf     <tspan fill="#34d399">dispatcher Job</tspan></text>
+    <text y="280">├ dashboard_api.tf <tspan fill="#34d399">FastAPI Service</tspan></text>
+    <text y="300">├ scheduler.tf    <tspan fill="#34d399">cron */15</tspan></text>
+    <text y="320">└ monitoring.tf   <tspan fill="#34d399">alerts</tspan></text>
+  </g>
+
+  <rect x="60" y="530" width="340" height="105" rx="10" fill="url(#g)" opacity="0.12"/>
+  <rect x="60" y="530" width="340" height="105" rx="10" fill="none" stroke="#10b981"/>
+  <text x="80" y="555" fill="#34d399" font-size="11" font-weight="700">REPRODUCIBILIDAD</text>
+  <text x="80" y="580" fill="#d1d5db" font-size="12">terraform apply recrea todo el</text>
+  <text x="80" y="598" fill="#d1d5db" font-size="12">proyecto desde cero en GCP.</text>
+  <text x="80" y="618" fill="#d1d5db" font-size="11">30+ recursos · 0 clicks en consola</text>
+
+  <!-- Middle column: CI/CD workflows -->
+  <rect x="450" y="80" width="380" height="580" rx="20" fill="#0c100e" stroke="#374151"/>
+  <text x="470" y="115" fill="#9ca3af" font-size="12" font-weight="700" letter-spacing="2">CI/CD</text>
+  <text x="470" y="142" fill="#fff" font-size="20" font-weight="800">.github/workflows/</text>
+
+  <g transform="translate(470,180)" font-size="12" fill="#d1d5db">
+    <g><rect width="340" height="56" rx="8" fill="#1f2937"/>
+      <text x="14" y="22" fill="#fff" font-weight="600">ci.yml</text>
+      <text x="14" y="40" fill="#9ca3af" font-size="11">PR+push · ruff + pytest (etl, dispatcher, dashboard)</text></g>
+
+    <g transform="translate(0,72)"><rect width="340" height="56" rx="8" fill="#1f2937"/>
+      <text x="14" y="22" fill="#fff" font-weight="600">infra.yml</text>
+      <text x="14" y="40" fill="#9ca3af" font-size="11">tocas infra/** → terraform plan PR, apply en main</text></g>
+
+    <g transform="translate(0,144)"><rect width="340" height="56" rx="8" fill="#1f2937"/>
+      <text x="14" y="22" fill="#fff" font-weight="600">deploy-etl.yml</text>
+      <text x="14" y="40" fill="#9ca3af" font-size="11">sube main.py + deps a GCS etl-artifacts</text></g>
+
+    <g transform="translate(0,216)"><rect width="340" height="56" rx="8" fill="#1f2937"/>
+      <text x="14" y="22" fill="#fff" font-weight="600">deploy-dispatcher.yml</text>
+      <text x="14" y="40" fill="#9ca3af" font-size="11">build + push AR · gcloud run jobs update</text></g>
+
+    <g transform="translate(0,288)"><rect width="340" height="56" rx="8" fill="#1f2937"/>
+      <text x="14" y="22" fill="#fff" font-weight="600">deploy-dashboard-backend.yml</text>
+      <text x="14" y="40" fill="#9ca3af" font-size="11">build + push AR · gcloud run services update</text></g>
+  </g>
+
+  <!-- Right column: WIF -->
+  <rect x="860" y="80" width="300" height="580" rx="20" fill="#0c100e" stroke="#10b981" stroke-width="1.5"/>
+  <text x="880" y="115" fill="#34d399" font-size="12" font-weight="700" letter-spacing="2">AUTH</text>
+  <text x="880" y="142" fill="#fff" font-size="20" font-weight="800">WIF</text>
+  <text x="880" y="162" fill="#cbd5d1" font-size="11">Workload Identity Federation</text>
+
+  <g transform="translate(880,200)" font-size="11" fill="#d1d5db">
+    <text y="0" font-weight="700" fill="#34d399">FLUJO</text>
+    <text y="20">1. GHA pide OIDC token</text>
+    <text y="38">2. Google verifica issuer +</text>
+    <text y="54">   condición:</text>
+    <text y="72" font-family="ui-monospace,monospace" fill="#6ee7b7">   assertion.repository ==</text>
+    <text y="88" font-family="ui-monospace,monospace" fill="#6ee7b7">   'DidierParody/deluxe-analyze'</text>
+    <text y="108">3. Devuelve credenciales</text>
+    <text y="124">   temporales (≤1h) para</text>
+    <text y="140">   github-actions-sa</text>
+
+    <text y="180" font-weight="700" fill="#34d399">GARANTÍAS</text>
+    <text y="200">• 0 keys JSON descargables</text>
+    <text y="218">• 0 secretos rotables</text>
+    <text y="236">• Token expira en 1h</text>
+    <text y="254">• Solo este repo puede deployar</text>
+
+    <text y="294" font-weight="700" fill="#34d399">SECRETS GHA NEEDED</text>
+    <text y="312" font-family="ui-monospace,monospace" fill="#6ee7b7">WIF_PROVIDER</text>
+    <text y="328" font-family="ui-monospace,monospace" fill="#6ee7b7">WIF_SERVICE_ACCOUNT</text>
+    <text y="344" font-family="ui-monospace,monospace" fill="#6ee7b7">GCP_PROJECT</text>
+  </g>
+</svg>

@@ -39,3 +39,4 @@ etl/**/*.zip
 # Cloud SDK / gcloud local state
 .gcloud/
 .claude/
+*.tfplan

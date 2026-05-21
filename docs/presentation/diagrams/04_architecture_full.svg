@@ -1,0 +1,171 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1400 800" font-family="Inter, sans-serif">
+  <defs>
+    <linearGradient id="aws" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#1f2937"/><stop offset="100%" stop-color="#111827"/>
+    </linearGradient>
+    <linearGradient id="gcp" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0c100e"/><stop offset="100%" stop-color="#050605"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#10b981"/><stop offset="100%" stop-color="#047857"/>
+    </linearGradient>
+    <marker id="arr" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#34d399"/>
+    </marker>
+    <marker id="arrG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#9ca3af"/>
+    </marker>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1400" height="800" fill="#050605"/>
+
+  <!-- AWS region box -->
+  <rect x="20" y="60" width="340" height="700" rx="20" fill="url(#aws)" stroke="#374151" stroke-width="1"/>
+  <text x="40" y="95" fill="#9ca3af" font-size="14" font-weight="700" letter-spacing="2">AWS</text>
+  <text x="40" y="118" fill="#fff" font-size="22" font-weight="700">deluxe-v2 (operational)</text>
+
+  <!-- AWS components -->
+  <g transform="translate(60,160)">
+    <rect width="260" height="70" rx="12" fill="#1f2937" stroke="#374151"/>
+    <text x="20" y="32" fill="#fff" font-size="15" font-weight="600">RDS Postgres</text>
+    <text x="20" y="52" fill="#9ca3af" font-size="11">logical replication enabled</text>
+  </g>
+
+  <g transform="translate(60,260)">
+    <rect width="260" height="70" rx="12" fill="#1f2937" stroke="#374151"/>
+    <text x="20" y="32" fill="#fff" font-size="15" font-weight="600">DMS Replication Task</text>
+    <text x="20" y="52" fill="#9ca3af" font-size="11">full-load + cdc (ongoing)</text>
+  </g>
+
+  <g transform="translate(60,360)">
+    <rect width="260" height="70" rx="12" fill="#1f2937" stroke="#374151"/>
+    <text x="20" y="32" fill="#fff" font-size="15" font-weight="600">S3 bucket</text>
+    <text x="20" y="52" fill="#9ca3af" font-size="11">Parquet — particionado por tabla/fecha</text>
+  </g>
+
+  <g transform="translate(60,460)">
+    <rect width="260" height="70" rx="12" fill="#1f2937" stroke="#374151"/>
+    <text x="20" y="32" fill="#fff" font-size="15" font-weight="600">Lambda s3_to_pubsub</text>
+    <text x="20" y="52" fill="#9ca3af" font-size="11">trigger ObjectCreated → publish</text>
+  </g>
+
+  <g transform="translate(60,560)">
+    <rect width="260" height="70" rx="12" fill="#1f2937" stroke="#374151" stroke-dasharray="4 3"/>
+    <text x="20" y="32" fill="#fff" font-size="15" font-weight="600">IAM user gcp-cdc-reader</text>
+    <text x="20" y="52" fill="#9ca3af" font-size="11">HMAC keys → Secret Manager (GCP)</text>
+  </g>
+
+  <!-- Internal AWS arrows -->
+  <path d="M190,230 L190,260" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <path d="M190,330 L190,360" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <path d="M190,430 L190,460" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+
+  <!-- GCP region box -->
+  <rect x="420" y="60" width="960" height="700" rx="20" fill="url(#gcp)" stroke="#065f46" stroke-width="1.5"/>
+  <text x="440" y="95" fill="#34d399" font-size="14" font-weight="700" letter-spacing="2">GCP — deluxe-analyze (analytical)</text>
+  <text x="440" y="118" fill="#fff" font-size="22" font-weight="700">VPC custom 10.20.0.0/16</text>
+
+  <!-- Subnet boxes -->
+  <rect x="440" y="155" width="450" height="290" rx="14" fill="none" stroke="#047857" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="460" y="180" fill="#34d399" font-size="11" font-weight="700">subnet-data 10.20.10.0/24</text>
+
+  <rect x="910" y="155" width="450" height="290" rx="14" fill="none" stroke="#047857" stroke-width="1.2" stroke-dasharray="6 4"/>
+  <text x="930" y="180" fill="#34d399" font-size="11" font-weight="700">subnet-graph 10.20.20.0/24</text>
+
+  <!-- GCP components subnet-data -->
+  <g transform="translate(460,200)">
+    <rect width="410" height="56" rx="12" fill="#0c100e" stroke="#065f46"/>
+    <text x="20" y="22" fill="#fff" font-size="13" font-weight="600">Pub/Sub  cdc-events topic + sub + DLQ</text>
+    <text x="20" y="42" fill="#9ca3af" font-size="11">pull, ack=600s, retention=7d</text>
+  </g>
+
+  <g transform="translate(460,280)">
+    <rect width="200" height="60" rx="12" fill="#0c100e" stroke="#065f46"/>
+    <text x="14" y="22" fill="#fff" font-size="13" font-weight="600">Cloud Scheduler</text>
+    <text x="14" y="42" fill="#9ca3af" font-size="11">*/15 * * * * UTC</text>
+  </g>
+
+  <g transform="translate(670,280)">
+    <rect width="200" height="60" rx="12" fill="#0c100e" stroke="#065f46"/>
+    <text x="14" y="22" fill="#fff" font-size="13" font-weight="600">Cloud Run Job</text>
+    <text x="14" y="42" fill="#9ca3af" font-size="11">dispatcher (Python)</text>
+  </g>
+
+  <g transform="translate(460,370)">
+    <rect width="410" height="60" rx="12" fill="url(#green)" opacity="0.18"/>
+    <rect width="410" height="60" rx="12" fill="none" stroke="#10b981"/>
+    <text x="14" y="22" fill="#fff" font-size="13" font-weight="700">Dataproc Serverless Batch</text>
+    <text x="14" y="42" fill="#d1d5db" font-size="11">PySpark — normalize → derive CONOCE_A → write Neo4j</text>
+  </g>
+
+  <!-- GCP components subnet-graph -->
+  <g transform="translate(930,200)">
+    <rect width="410" height="220" rx="12" fill="url(#green)" opacity="0.10"/>
+    <rect width="410" height="220" rx="12" fill="none" stroke="#10b981"/>
+    <text x="20" y="28" fill="#fff" font-size="14" font-weight="700">Neo4j VM (e2-medium)</text>
+    <text x="20" y="50" fill="#9ca3af" font-size="11">10.20.20.2:7687 (Bolt) + :7474 (HTTP)</text>
+    <text x="20" y="76" fill="#d1d5db" font-size="11">• Neo4j 5.26 Community</text>
+    <text x="20" y="94" fill="#d1d5db" font-size="11">• GDS 2.14 (PageRank, Louvain, Betweenness)</text>
+    <text x="20" y="112" fill="#d1d5db" font-size="11">• Disco pd-balanced 50GB + snapshot diario</text>
+    <text x="20" y="130" fill="#d1d5db" font-size="11">• IP estática externa + firewall whitelist</text>
+    <text x="20" y="148" fill="#d1d5db" font-size="11">• 361 nodos · 42K relaciones</text>
+  </g>
+
+  <!-- Dashboard layer -->
+  <g transform="translate(460,475)">
+    <rect width="410" height="60" rx="12" fill="#0c100e" stroke="#065f46"/>
+    <text x="14" y="22" fill="#fff" font-size="13" font-weight="600">Cloud Run Service  dashboard-api</text>
+    <text x="14" y="42" fill="#9ca3af" font-size="11">FastAPI + X-API-Key + Direct VPC egress</text>
+  </g>
+
+  <g transform="translate(930,475)">
+    <rect width="410" height="60" rx="12" fill="#0c100e" stroke="#065f46"/>
+    <text x="14" y="22" fill="#fff" font-size="13" font-weight="600">Secret Manager · Artifact Registry</text>
+    <text x="14" y="42" fill="#9ca3af" font-size="11">5 secrets · 2 docker repos</text>
+  </g>
+
+  <!-- Client tier -->
+  <g transform="translate(460,580)">
+    <rect width="900" height="70" rx="14" fill="#1f2937" stroke="#374151"/>
+    <text x="20" y="30" fill="#fff" font-size="15" font-weight="700">Flutter app — Android APK · Web build</text>
+    <text x="20" y="52" fill="#9ca3af" font-size="11">Home + 6 screens · fl_chart · syncfusion_treemap · go_router · dio</text>
+  </g>
+
+  <!-- IaC layer -->
+  <g transform="translate(460,680)">
+    <rect width="900" height="60" rx="14" fill="#0c100e" stroke="#374151" stroke-dasharray="4 3"/>
+    <text x="20" y="28" fill="#34d399" font-size="13" font-weight="700">Terraform IaC · GitHub Actions CI/CD · Workload Identity Federation</text>
+    <text x="20" y="48" fill="#9ca3af" font-size="11">14 .tf files · 5 workflows · 6 service accounts · cero claves de larga vida</text>
+  </g>
+
+  <!-- Cross-cloud arrow (S3 → Pub/Sub via Lambda) -->
+  <path d="M325,495 C 380,495 400,228 460,228" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#arr)"/>
+  <text x="345" y="365" fill="#34d399" font-size="11" font-weight="700">HTTPS publish</text>
+  <text x="345" y="380" fill="#9ca3af" font-size="10">Workload Identity Fed.</text>
+
+  <!-- HMAC arrow (S3 → Dataproc) -->
+  <path d="M325,395 C 400,395 420,400 460,400" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)" stroke-dasharray="4 3"/>
+  <text x="345" y="392" fill="#9ca3af" font-size="10">s3a:// HMAC</text>
+
+  <!-- Internal GCP flows -->
+  <path d="M560,340 L560,370" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <path d="M770,340 L600,370" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <path d="M770,280 L660,256" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+  <path d="M660,310 L670,310" stroke="#9ca3af" stroke-width="2" fill="none" marker-end="url(#arrG)"/>
+
+  <!-- Dataproc → Neo4j -->
+  <path d="M870,400 L930,310" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#arr)"/>
+  <text x="878" y="365" fill="#34d399" font-size="10" font-weight="600">Bolt</text>
+
+  <!-- Dashboard → Neo4j -->
+  <path d="M870,500 L930,400" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#arr)"/>
+  <text x="878" y="460" fill="#34d399" font-size="10" font-weight="600">Bolt</text>
+
+  <!-- Flutter → dashboard-api -->
+  <path d="M660,580 L660,535" stroke="#34d399" stroke-width="2.5" fill="none" marker-end="url(#arr)"/>
+  <text x="540" y="565" fill="#34d399" font-size="10" font-weight="600">HTTPS + X-API-Key</text>
+
+  <!-- Title -->
+  <text x="700" y="38" fill="#fff" font-size="22" font-weight="800" text-anchor="middle">Arquitectura end-to-end · CDC AWS → Neo4j GCP → Flutter</text>
+</svg>
