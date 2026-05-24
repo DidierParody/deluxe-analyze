@@ -14,8 +14,14 @@ infra/*.tfstate.backup
 infra/terraform.tfvars
 infra/.terraform.lock.hcl
 
-# Diagram exports
+# Diagram exports (auto-generated, kept out of repo)
 *.png
+# ...except presentation deliverables that we commit on purpose
+!docs/presentation/diagrams/png/*.png
+!dashboard/frontend/android/app/src/main/res/**/*.png
+!dashboard/frontend/ios/Runner/Assets.xcassets/**/*.png
+!dashboard/frontend/web/icons/*.png
+!dashboard/frontend/web/*.png
 
 # Jupyter checkpoints
 .ipynb_checkpoints/
